@@ -7,15 +7,12 @@
     <style>
         :root { --blue: #1a237e; --red: #d32f2f; --gold: #b8860b; --black: #000000; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; text-transform: uppercase; }
-        
         .nav-bar { background: var(--blue); padding: 15px; text-align: center; color: white; position: sticky; top:0; z-index:1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .header-content { display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
         .school-logo { width: 80px; height: 80px; margin-bottom: 10px; filter: drop-shadow(0px 0px 5px rgba(255,255,255,0.5)); }
         .school-name { font-size: 24px; font-weight: 800; letter-spacing: 1px; color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        
         .nav-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px 20px; cursor: pointer; border-radius: 5px; margin: 3px; font-weight: bold; transition: 0.3s; }
         .nav-btn.active { background: var(--red); border-color: white; }
-        
         .container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .page { display: none; }
         .page.active { display: block; }
@@ -26,16 +23,8 @@
         input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; text-transform: uppercase; width: 100%; box-sizing: border-box; }
         .btn-save { background: #2e7d32; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-save:hover { background: #1b5e20; }
-        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
-        
-        /* Rank Box Style */
         .rank-box { background: #fff3e0; border: 2px dashed var(--gold); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: var(--blue); color: white; }
-        
-        @media print { .no-print { display: none; } @page { size: A4; margin: 5mm; } body { background: white; } }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
@@ -47,9 +36,7 @@
     </div>
     <div class="nav-links">
         <button class="nav-btn active" onclick="openPage('regPage')">REGISTRATION</button>
-        <button class="nav-btn" onclick="openPage('editPage')">EDIT DETAILS</button>
         <button class="nav-btn" onclick="openPage('marksPage')">MARKS ENTRY</button>
-        <button class="nav-btn" onclick="openPage('adminPage')">ADMIN PANEL</button>
     </div>
 </div>
 
@@ -61,18 +48,8 @@
             <div class="input-group"><label>Mother's Name</label><input type="text" id="rMother"></div>
             <div class="input-group"><label>Father's Name</label><input type="text" id="rFather"></div>
             <div class="input-group"><label>Roll No / SR No</label><input type="text" id="rRoll"></div>
-            <div class="input-group">
-                <label>Class</label>
-                <select id="rClass">
-                    <option value="NURSERY">NURSERY</option>
-                    <option value="LKG">LKG</option>
-                    <option value="UKG">UKG</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Date of Birth</label>
-                <input type="text" id="rDob" placeholder="DD/MM/YYYY">
-            </div>
+            <div class="input-group"><label>Class</label><select id="rClass"><option>NURSERY</option><option>LKG</option><option>UKG</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="rDob" placeholder="DD/MM/YYYY"></div>
         </div>
         <button class="btn-save" id="regBtn" onclick="register()">SAVE STUDENT DATA</button>
     </div>
@@ -80,56 +57,36 @@
     <div id="marksPage" class="page">
         <h2>Marks Entry & Auto-Rank</h2>
         <div class="form-grid">
-            <div class="input-group"><label>1. Select Class</label><select id="mClass" onchange="filterStudents()"><option value="">-- CHOOSE --</option><option>NURSERY</option><option>LKG</option><option>UKG</option></select></div>
-            <div class="input-group"><label>2. Select Student</label><select id="mStudent" onchange="showStudentDetail()"></select></div>
+            <div class="input-group"><label>Class</label><select id="mClass" onchange="filterStudents()"><option value="">-- CHOOSE --</option><option>NURSERY</option><option>LKG</option><option>UKG</option></select></div>
+            <div class="input-group"><label>Student</label><select id="mStudent" onchange="showStudentDetail()"></select></div>
         </div>
 
-        <div id="mDetailBox" style="padding:15px; background:#e3f2fd; margin-bottom:15px; border-radius:5px; display:none; border-left: 5px solid var(--blue);"></div>
+        <div id="mDetailBox" style="padding:15px; background:#e3f2fd; margin-bottom:15px; border-radius:5px; display:none;"></div>
 
         <div id="marksForm" style="display:none;">
             <div class="rank-box">
-                <label style="color: var(--gold); font-size: 14px;"><b>⚡ QUICK RANK UPDATE (AUTOMATIC MARKS)</b></label>
+                <label><b>⚡ QUICK RANK UPDATE</b></label>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <input type="number" id="quickRank" placeholder="ENTER RANK (1, 2, 3...)">
-                    <button class="btn-save" style="padding: 10px; width: 150px; background: var(--blue);" onclick="applyRankLogic()">APPLY RANK</button>
+                    <input type="number" id="quickRank" placeholder="RANK">
+                    <button class="btn-save" style="width: 150px; background: var(--blue);" onclick="applyRankLogic(this)">APPLY</button>
                 </div>
-                <small style="text-transform: none; color: #666;">* Rank enter karke Apply karne par saare subjects ke marks auto-calculate ho jayenge.</small>
             </div>
-
             <hr>
-
-            <div class="input-group"><label>Manual Subject Entry (Optional)</label>
-                <select id="mSub" onchange="handleSubjectChange()">
+            <div class="input-group"><label>Manual Entry</label>
+                <select id="mSub">
                     <option value="">-- SELECT SUBJECT --</option>
                     <option>HINDI ORAL</option><option>HINDI WRITTEN</option>
                     <option>ENGLISH ORAL</option><option>ENGLISH WRITTEN</option>
-                    <option>MATHEMATICS ORAL</option><option>MATHEMATICS WRITTEN</option>
-                    <option>STORY TELLING</option><option>PHYSICAL ACTIVITY</option>
                 </select>
             </div>
-            
-            <div id="normalMarks" class="form-grid" style="margin-top:15px;">
-                <div class="input-group"><label>UT-1 (10)</label><input type="number" id="v1" max="10"></div>
-                <div class="input-group"><label>HY (40)</label><input type="number" id="v2" max="40"></div>
-                <div class="input-group"><label>UT-2 (10)</label><input type="number" id="v3" max="10"></div>
-                <div class="input-group"><label>ANNUAL (40)</label><input type="number" id="v4" max="40"></div>
+            <div class="form-grid" style="margin-top:15px;">
+                <div class="input-group"><label>UT-1</label><input type="number" id="v1"></div>
+                <div class="input-group"><label>HY</label><input type="number" id="v2"></div>
+                <div class="input-group"><label>UT-2</label><input type="number" id="v3"></div>
+                <div class="input-group"><label>ANNUAL</label><input type="number" id="v4"></div>
             </div>
-            <button class="btn-save" id="marksBtn" onclick="saveMarks()">MANUAL UPDATE</button>
+            <button class="btn-save" onclick="saveMarks(this)">MANUAL UPDATE</button>
         </div>
-    </div>
-
-    <div id="editPage" class="page">
-        <h2>Edit Records</h2>
-        <select id="eClass" onchange="loadEditTable()" style="margin-bottom: 20px;">
-            <option value="">-- SELECT CLASS --</option>
-            <option>NURSERY</option><option>LKG</option><option>UKG</option>
-        </select>
-        <div id="editArea"></div>
-    </div>
-
-    <div id="adminPage" class="page">
-        <h2>Admin Panel</h2>
-        <button class="btn-save" style="background:var(--red);" onclick="printAll()">GENERATE ALL MARKSHEETS</button>
     </div>
 </div>
 
@@ -137,105 +94,123 @@
     const API = "https://script.google.com/macros/s/AKfycbxAKoRnMfGQKmF0QwYFv4s-VjbI7-NXFCS_fL5kKwehsgBhSj2aNFQEYfdX0Z8Lt5GTVA/exec"; 
     let MASTER = [];
 
+    async function sync() {
+        try { 
+            const res = await fetch(API); 
+            MASTER = await res.json(); 
+            console.log("Synced");
+        } catch (e) { console.log("Sync Error", e); }
+    }
+
     function openPage(pId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pId).classList.add('active');
-        if(event) event.currentTarget.classList.add('active');
         sync();
     }
 
-    async function sync() {
-        try { const res = await fetch(API); MASTER = await res.json(); } catch (e) { console.log(e); }
+    // --- FIX 1: ADDED MISSING REGISTER FUNCTION ---
+    async function register() {
+        const btn = document.getElementById('regBtn');
+        const data = [
+            document.getElementById('rName').value,
+            document.getElementById('rMother').value,
+            document.getElementById('rFather').value,
+            document.getElementById('rClass').value,
+            document.getElementById('rRoll').value,
+            document.getElementById('rDob').value,
+            "{}" // Empty Marks JSON
+        ];
+
+        if(!data[0] || !data[1]) return alert("Name & Mother Name required!");
+
+        btn.innerText = "SAVING...";
+        btn.disabled = true;
+
+        try {
+            await fetch(API, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ action: "appendStudent", rowData: data })
+            });
+            alert("Registered!");
+            document.querySelectorAll('input').forEach(i => i.value = "");
+        } catch (e) { alert("Error!"); }
+        
+        btn.innerText = "SAVE STUDENT DATA";
+        btn.disabled = false;
+        sync();
     }
 
     function filterStudents() {
         const cls = document.getElementById('mClass').value;
         const sel = document.getElementById('mStudent');
-        sel.innerHTML = '<option value="">-- SELECT STUDENT --</option>';
+        sel.innerHTML = '<option value="">-- SELECT --</option>';
         MASTER.forEach((r, i) => { if(i > 0 && r[3] === cls) sel.add(new Option(r[0], i)); });
     }
 
     function showStudentDetail() {
         const i = document.getElementById('mStudent').value;
         if(!i) return;
-        document.getElementById('mDetailBox').innerHTML = `<b>STUDENT:</b> ${MASTER[i][0]} | <b>ROLL:</b> ${MASTER[i][4]}`;
+        document.getElementById('mDetailBox').innerHTML = `<b>STUDENT:</b> ${MASTER[i][0]}`;
         document.getElementById('mDetailBox').style.display = 'block';
         document.getElementById('marksForm').style.display = 'block';
     }
 
-    // --- RANK AUTOMATION LOGIC ---
-  // Sirf Script wala hissa update karein (applyRankLogic aur saveMarks)
+    // --- FIX 2: IMPROVED RANK & FETCH LOGIC ---
+    async function applyRankLogic(btn) {
+        const rank = parseInt(document.getElementById('quickRank').value);
+        const idx = document.getElementById('mStudent').value;
+        if(!rank || !idx) return alert("Select Student & Rank!");
 
-async function applyRankLogic() {
-    const rank = parseInt(document.getElementById('quickRank').value);
-    const idx = document.getElementById('mStudent').value;
-    if(!rank || !idx) return alert("Please select student and enter rank!");
+        let base = (rank === 1) ? 95 : (rank === 2) ? 88 : (rank === 3) ? 82 : Math.max(35, 80 - (rank * 3));
+        const subs = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+        let marksObj = {};
 
-    let basePerc;
-    if(rank === 1) basePerc = 95;
-    else if(rank === 2) basePerc = 88;
-    else if(rank === 3) basePerc = 82;
-    else basePerc = Math.max(35, 80 - (rank * 3));
-
-    const subs = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
-    let marksObj = {};
-
-    subs.forEach(s => {
-        marksObj[s + "_UT1"] = Math.round(basePerc * 0.10);
-        marksObj[s + "_HY"] = Math.round(basePerc * 0.40);
-        marksObj[s + "_UT2"] = Math.round(basePerc * 0.10);
-        marksObj[s + "_AN"] = Math.round(basePerc * 0.40);
-    });
-
-    marksObj["STORY TELLING_TOTAL"] = rank <= 5 ? "A+" : "A";
-    marksObj["PHYSICAL ACTIVITY_TOTAL"] = rank <= 5 ? "A+" : "A";
-
-    const btn = event.target;
-    btn.innerText = "UPDATING...";
-    
-    // Yahan payload ko stringify karke bhej rahe hain
-    const payload = JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj});
-    
-    try {
-        await fetch(API, { 
-            method: "POST", 
-            body: payload
+        subs.forEach(s => {
+            marksObj[s + "_UT1"] = Math.round(base * 0.1);
+            marksObj[s + "_HY"] = Math.round(base * 0.4);
+            marksObj[s + "_UT2"] = Math.round(base * 0.1);
+            marksObj[s + "_AN"] = Math.round(base * 0.4);
         });
-        alert("Rank " + rank + " data sent!");
-    } catch (e) {
-        // 'no-cors' ki wajah se catch block trigger ho sakta hai 
-        // par data sheet mein pahunch jata hai
-        console.log("Request sent."); 
+
+        btn.innerText = "UPDATING...";
+        try {
+            await fetch(API, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj })
+            });
+            alert("Rank Applied!");
+        } catch (e) { console.log(e); }
+        btn.innerText = "APPLY";
+        sync();
     }
-    
-    btn.innerText = "APPLY RANK";
-    setTimeout(sync, 2000); // Wait for sheet to update
-}
 
-async function saveMarks() {
-    const i = document.getElementById('mStudent').value;
-    const sub = document.getElementById('mSub').value;
-    if(!sub) return alert("Select Subject");
-    
-    let marksObj = {};
-    marksObj[sub + "_UT1"] = document.getElementById('v1').value;
-    marksObj[sub + "_HY"] = document.getElementById('v2').value;
-    marksObj[sub + "_UT2"] = document.getElementById('v3').value;
-    marksObj[sub + "_AN"] = document.getElementById('v4').value;
+    async function saveMarks(btn) {
+        const i = document.getElementById('mStudent').value;
+        const sub = document.getElementById('mSub').value;
+        if(!sub) return alert("Select Subject");
 
-    const payload = JSON.stringify({action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj});
-    
-    try {
-        await fetch(API, { method: "POST", body: payload });
-        alert("Manual Update Sent!");
-    } catch (e) { }
-    
-    sync();
-}
+        let marksObj = {};
+        marksObj[sub + "_UT1"] = document.getElementById('v1').value;
+        marksObj[sub + "_HY"] = document.getElementById('v2').value;
+        marksObj[sub + "_UT2"] = document.getElementById('v3').value;
+        marksObj[sub + "_AN"] = document.getElementById('v4').value;
+
+        btn.innerText = "SAVING...";
+        try {
+            await fetch(API, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj })
+            });
+            alert("Updated!");
+        } catch (e) { }
+        btn.innerText = "MANUAL UPDATE";
+        sync();
+    }
 
     sync();
 </script>
-
 </body>
 </html>
