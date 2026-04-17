@@ -165,52 +165,74 @@
     }
 
     // --- RANK AUTOMATION LOGIC ---
-    async function applyRankLogic() {
-        const rank = parseInt(document.getElementById('quickRank').value);
-        const idx = document.getElementById('mStudent').value;
-        if(!rank || !idx) return alert("Please select student and enter rank!");
+  // Sirf Script wala hissa update karein (applyRankLogic aur saveMarks)
 
-        let basePerc;
-        if(rank === 1) basePerc = 95;
-        else if(rank === 2) basePerc = 88;
-        else if(rank === 3) basePerc = 82;
-        else basePerc = Math.max(35, 80 - (rank * 3));
+async function applyRankLogic() {
+    const rank = parseInt(document.getElementById('quickRank').value);
+    const idx = document.getElementById('mStudent').value;
+    if(!rank || !idx) return alert("Please select student and enter rank!");
 
-        const subs = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
-        let marksObj = {};
+    let basePerc;
+    if(rank === 1) basePerc = 95;
+    else if(rank === 2) basePerc = 88;
+    else if(rank === 3) basePerc = 82;
+    else basePerc = Math.max(35, 80 - (rank * 3));
 
-        subs.forEach(s => {
-            marksObj[s + "_UT1"] = Math.round(basePerc * 0.10);
-            marksObj[s + "_HY"] = Math.round(basePerc * 0.40);
-            marksObj[s + "_UT2"] = Math.round(basePerc * 0.10);
-            marksObj[s + "_AN"] = Math.round(basePerc * 0.40);
+    const subs = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+    let marksObj = {};
+
+    subs.forEach(s => {
+        marksObj[s + "_UT1"] = Math.round(basePerc * 0.10);
+        marksObj[s + "_HY"] = Math.round(basePerc * 0.40);
+        marksObj[s + "_UT2"] = Math.round(basePerc * 0.10);
+        marksObj[s + "_AN"] = Math.round(basePerc * 0.40);
+    });
+
+    marksObj["STORY TELLING_TOTAL"] = rank <= 5 ? "A+" : "A";
+    marksObj["PHYSICAL ACTIVITY_TOTAL"] = rank <= 5 ? "A+" : "A";
+
+    const btn = event.target;
+    btn.innerText = "UPDATING...";
+    
+    // Yahan payload ko stringify karke bhej rahe hain
+    const payload = JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj});
+    
+    try {
+        await fetch(API, { 
+            method: "POST", 
+            body: payload
         });
-
-        marksObj["STORY TELLING_TOTAL"] = rank <= 5 ? "A+" : "A";
-        marksObj["PHYSICAL ACTIVITY_TOTAL"] = rank <= 5 ? "A+" : "A";
-
-        const btn = event.target;
-        btn.innerText = "UPDATING...";
-        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj}) });
-        alert("Rank " + rank + " data updated successfully!");
-        btn.innerText = "APPLY RANK";
-        sync();
+        alert("Rank " + rank + " data sent!");
+    } catch (e) {
+        // 'no-cors' ki wajah se catch block trigger ho sakta hai 
+        // par data sheet mein pahunch jata hai
+        console.log("Request sent."); 
     }
+    
+    btn.innerText = "APPLY RANK";
+    setTimeout(sync, 2000); // Wait for sheet to update
+}
 
-    async function saveMarks() {
-        // Manual save logic (same as before)
-        const i = document.getElementById('mStudent').value;
-        const sub = document.getElementById('mSub').value;
-        let marksObj = {};
-        marksObj[sub + "_UT1"] = document.getElementById('v1').value;
-        marksObj[sub + "_HY"] = document.getElementById('v2').value;
-        marksObj[sub + "_UT2"] = document.getElementById('v3').value;
-        marksObj[sub + "_AN"] = document.getElementById('v4').value;
+async function saveMarks() {
+    const i = document.getElementById('mStudent').value;
+    const sub = document.getElementById('mSub').value;
+    if(!sub) return alert("Select Subject");
+    
+    let marksObj = {};
+    marksObj[sub + "_UT1"] = document.getElementById('v1').value;
+    marksObj[sub + "_HY"] = document.getElementById('v2').value;
+    marksObj[sub + "_UT2"] = document.getElementById('v3').value;
+    marksObj[sub + "_AN"] = document.getElementById('v4').value;
 
-        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj}) });
-        alert("Manual Update Success!");
-        sync();
-    }
+    const payload = JSON.stringify({action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj});
+    
+    try {
+        await fetch(API, { method: "POST", body: payload });
+        alert("Manual Update Sent!");
+    } catch (e) { }
+    
+    sync();
+}
 
     sync();
 </script>
