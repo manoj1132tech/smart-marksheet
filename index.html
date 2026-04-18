@@ -238,12 +238,19 @@
             marksObj["STORY TELLING_TOTAL"] = grade;
             marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
 
-            // Generate Marks with Variables (No Full Marks)
+            // Updated Logic: Har subject ke liye alag random factor
             subjects.forEach(sub => {
-                // Base calculation to keep marks unique and below max
-                // Max 10: 9.5 down to 5 | Max 40: 38 down to 20
-                let v10 = Math.max(5, 9.5 - (rank * 0.2) - (Math.random() * 0.3));
-                let v40 = Math.max(20, 38.5 - (rank * 0.8) - (Math.random() * 1.5));
+                // Base values rank ke hisaab se
+                let base10 = 9.5 - (rank * 0.2);
+                let base40 = 38.5 - (rank * 0.8);
+                
+                // Har subject ke liye alag random variation (0.1 se 0.7 tak)
+                // Isse marks same nahi honge
+                let variation10 = Math.random() * 0.7;
+                let variation40 = Math.random() * 2.5;
+
+                let v10 = Math.max(5, base10 - variation10);
+                let v40 = Math.max(20, base40 - variation40);
                 
                 marksObj[sub + "_UT1"] = Math.floor(v10);
                 marksObj[sub + "_HY"] = Math.floor(v40);
@@ -259,7 +266,7 @@
             updateCount++;
         }
 
-        alert(updateCount + " STUDENTS UPDATED RANK-WISE!");
+        alert(updateCount + " STUDENTS UPDATED WITH UNIQUE MARKS!");
         btn.disabled = false; btn.innerText = "UPLOAD ALL RANKS";
         sync();
     }
