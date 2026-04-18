@@ -399,33 +399,53 @@
                 let grandTotal = 0;
                 let subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
                 let tableRows = subjects.map(s => {
-                    let u1 = Number(m[s+'_UT1']||0); let hy = Number(m[s+'_HY']||0);
-                    let u2 = Number(m[s+'_UT2']||0); let an = Number(m[s+'_AN']||0);
-                    let t = u1 + hy + u2 + an; grandTotal += t;
+                    let u1 = Number(m[s+'_UT1']||0);
+                    let hy = Number(m[s+'_HY']||0);
+                    let u2 = Number(m[s+'_UT2']||0);
+                    let an = Number(m[s+'_AN']||0);
+                    let t = u1 + hy + u2 + an;
+                    grandTotal += t;
                     return `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">${s}</td><td>${prefixZero(u1)}</td><td>${hy}</td><td>${prefixZero(u2)}</td><td>${an}</td><td style="color:#d32f2f; font-weight:bold;">${t}</td><td>${getStars(t)}</td></tr>`;
                 }).join('');
+                
                 tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">STORY TELLING</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['STORY TELLING_TOTAL']||'-'}</td><td>${getStars(m['STORY TELLING_TOTAL'], true)}</td></tr>`;
                 tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">PHYSICAL ACTIVITY</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['PHYSICAL ACTIVITY_TOTAL']||'-'}</td><td>${getStars(m['PHYSICAL ACTIVITY_TOTAL'], true)}</td></tr>`;
+
                 let perc = (grandTotal / 6).toFixed(2);
                 let status = grandTotal >= 198 ? "PASSED" : "FAILED";
                 let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1ST");
+
                 content += `
-                <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative;">
+                <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif;">
+                    
+                 
+<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
+    <div style="flex: 0 0 80px;">
+        <img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;">
+    </div>
+    <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
+        <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
+    </div>
+</div>
                     <center>
-                        <h1 style="color:#1a237e; margin:0; font-size:35px;">K.R.R. JUNIOR HIGH SCHOOL</h1>
-                        <p style="margin:5px 0; font-weight:bold;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
                         <h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3>
                         <div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div>
                     </center>
-                    <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px;">
-                        <div>NAME: <b>${r[0]}</b></div><div style="padding-left:15%;">ROLL NO: <b>${r[4]}</b></div>
-                        <div>FATHER: <b>${r[2]}</b></div><div style="padding-left:15%;">MOTHER: <b>${r[1]}</b></div>
-                        <div>CLASS: <b>${r[3]}</b></div><div style="padding-left:15%;">D.O.B: <b>${formatDOB(r[5])}</b></div>
+                    
+                    <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:#fcfcfc;">
+                        <div>NAME: <b style="color:#1a237e;">${r[0]}</b></div>
+                        <div style="padding-left:15%;">ROLL NO: <b style="color:#1a237e;">${r[4]}</b></div>
+                        <div>FATHER'S NAME: <b style="color:#1a237e;">${r[2]}</b></div>
+                        <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${r[1]}</b></div>
+                        <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
+                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${r[5]}</b></div>
                     </div>
+
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
-                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>GRADE</th></tr>
+                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
                         ${tableRows}
                     </table>
+
                     <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:#fff9f0; font-size:16px;">
                         <div style="display:flex; justify-content:space-between; font-weight:bold;">
                             <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
@@ -433,13 +453,25 @@
                             <span>RESULT: <span style="color:#d32f2f;">${status}</span></span>
                         </div>
                     </div>
+
                     <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px;"><b>REMARKS:</b><br>${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</div>
-                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px;"><b>PROMOTED TO:</b><br>${status === 'PASSED' ? nextCls : cls}</div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;">
+                            <b style="font-size:12px;">TEACHER REMARKS:</b><br>
+                            <span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span>
+                        </div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;">
+                            <b style="font-size:12px;">PROMOTED TO CLASS:</b><br>
+                            <span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span>
+                        </div>
                     </div>
+                    
                     <div style="margin-top:60px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
-                        <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">TEACHER</span> 
+                        <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
+                    </div>
+
+                    <div style="position:absolute; bottom:30px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px;">
+                        ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿
                     </div>
                 </div>`;
             }
@@ -449,7 +481,11 @@
         win.document.close();
         setTimeout(() => win.print(), 1000);
     }
+    
+    // Initial sync on load
     sync();
 </script>
+</body>
+</html>
 </body>
 </html>
