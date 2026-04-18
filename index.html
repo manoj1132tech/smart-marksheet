@@ -220,56 +220,48 @@
     }
 
     async function processBulkRanks() {
-        const btn = document.getElementById('bulkBtn');
-        const inputs = document.querySelectorAll('.rank-input');
-        const subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
-        
-        let updateCount = 0;
-        btn.disabled = true; btn.innerText = "PROCESSING...";
+    const btn = document.getElementById('bulkBtn');
+    const inputs = document.querySelectorAll('.rank-input');
+    const subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+    
+    let updateCount = 0;
+    btn.disabled = true; btn.innerText = "PROCESSING...";
 
-        for(let input of inputs) {
-            const rank = parseInt(input.value);
-            const idx = input.getAttribute('data-idx');
-            if(!rank) continue;
+    for(let input of inputs) {
+        const rank = parseInt(input.value);
+        const idx = input.getAttribute('data-idx');
+        if(!rank) continue;
 
-            let marksObj = {};
-            // Story & Physical (Rank based Grade)
-            const grade = rank <= 3 ? "A+" : (rank <= 10 ? "A" : "B");
-            marksObj["STORY TELLING_TOTAL"] = grade;
-            marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
+        let marksObj = {};
+        const grade = rank <= 3 ? "A+" : (rank <= 10 ? "A" : "B");
+        marksObj["STORY TELLING_TOTAL"] = grade;
+        marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
 
-            // Updated Logic: Har subject ke liye alag random factor
-            subjects.forEach(sub => {
-                // Base values rank ke hisaab se
-                let base10 = 9.5 - (rank * 0.2);
-                let base40 = 38.5 - (rank * 0.8);
-                
-                // Har subject ke liye alag random variation (0.1 se 0.7 tak)
-                // Isse marks same nahi honge
-                let variation10 = Math.random() * 0.7;
-                let variation40 = Math.random() * 2.5;
+        subjects.forEach(sub => {
+            // Base logic
+            let base10 = 9.6 - (rank * 0.2);
+            let base40 = 38.6 - (rank * 0.8);
+            
+            // Har exam ke liye ALAG random variation
+            // Isse UT-1 aur UT-2 kabhi same nahi honge
+            marksObj[sub + "_UT1"] = Math.floor(Math.max(5, base10 - (Math.random() * 0.8)));
+            marksObj[sub + "_HY"] = Math.floor(Math.max(20, base40 - (Math.random() * 2.8)));
+            marksObj[sub + "_UT2"] = Math.floor(Math.max(5, base10 - (Math.random() * 0.8)));
+            marksObj[sub + "_AN"] = Math.floor(Math.max(20, base40 - (Math.random() * 2.8)));
+        });
 
-                let v10 = Math.max(5, base10 - variation10);
-                let v40 = Math.max(20, base40 - variation40);
-                
-                marksObj[sub + "_UT1"] = Math.floor(v10);
-                marksObj[sub + "_HY"] = Math.floor(v40);
-                marksObj[sub + "_UT2"] = Math.floor(v10);
-                marksObj[sub + "_AN"] = Math.floor(v40);
-            });
-
-            await fetch(API, { 
-                method: "POST", 
-                mode: 'no-cors', 
-                body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj}) 
-            });
-            updateCount++;
-        }
-
-        alert(updateCount + " STUDENTS UPDATED WITH UNIQUE MARKS!");
-        btn.disabled = false; btn.innerText = "UPLOAD ALL RANKS";
-        sync();
+        await fetch(API, { 
+            method: "POST", 
+            mode: 'no-cors', 
+            body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj}) 
+        });
+        updateCount++;
     }
+
+    alert(updateCount + " STUDENTS UPDATED WITH UNIQUE MARKS!");
+    btn.disabled = false; btn.innerText = "UPLOAD ALL RANKS";
+    sync();
+}
 
     async function register() {
         const btn = document.getElementById('regBtn');
@@ -421,10 +413,18 @@
                         <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
                         <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${r[5]}</b></div>
                     </div>
-                    <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
-                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
-                        ${tableRows}
-                    </table>
+                    // printAll function ke andar jahan table head hai, us line ko aise replace karein:
+<table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
+    <tr style="background:#1a237e; color:white;">
+        <th style="padding:10px;">SUBJECT NAME</th>
+        <th>UT-1</th>
+        <th>HALF YEARLY</th>
+        <th>UT-2</th>
+        <th>ANNUAL</th>
+        <th>TOTAL</th>
+        <th>GRADE</th> </tr>
+    ${tableRows}
+</table>
                     <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:#fff9f0; font-size:16px;">
                         <div style="display:flex; justify-content:space-between; font-weight:bold;">
                             <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
