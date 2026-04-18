@@ -219,7 +219,7 @@
         document.getElementById('rankTableArea').innerHTML = html + "</table>";
     }
 
-   async function processBulkRanks() {
+async function processBulkRanks() {
     const btn = document.getElementById('bulkBtn');
     const inputs = document.querySelectorAll('.rank-input');
     const subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
@@ -237,17 +237,36 @@
         marksObj["STORY TELLING_TOTAL"] = grade;
         marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
 
+        // Tracks frequency of each mark to avoid > 3 duplicates
+        let freqUT = {}; 
+        let freqExam = {};
+
+        function getUniqueVal(base, range, freqTracker, maxLimit) {
+            let val;
+            let attempts = 0;
+            do {
+                // Thoda variation add karne ke liye random factor
+                val = Math.floor(Math.max(base - range, base - (Math.random() * range)));
+                attempts++;
+                // Agar 3 se zyada baar same number aa raha hai toh loop phir chalega
+                // attempts < 10 limit rakhi hai taaki infinite loop na bane
+            } while (freqTracker[val] >= 3 && attempts < 10); 
+            
+            freqTracker[val] = (freqTracker[val] || 0) + 1;
+            return val;
+        }
+
         subjects.forEach(sub => {
-            // Base logic according to rank
             let base10 = 9.8 - (rank * 0.15);
             let base40 = 38.8 - (rank * 0.6);
             
-            // Har subject ke har exam ke liye ALAG random value generate ki hai
-            // Isse UT-1 aur UT-2 ke marks hamesha alag aayenge
-            marksObj[sub + "_UT1"] = Math.floor(Math.max(5, base10 - (Math.random() * 1.5)));
-            marksObj[sub + "_HY"]  = Math.floor(Math.max(20, base40 - (Math.random() * 3.5)));
-            marksObj[sub + "_UT2"] = Math.floor(Math.max(5, base10 - (Math.random() * 1.5)));
-            marksObj[sub + "_AN"]  = Math.floor(Math.max(20, base40 - (Math.random() * 3.5)));
+            // UT marks (Max 10) - Unique logic applied
+            marksObj[sub + "_UT1"] = getUniqueVal(base10, 2, freqUT, 10);
+            marksObj[sub + "_UT2"] = getUniqueVal(base10, 2, freqUT, 10);
+            
+            // Exam marks (Max 40) - Unique logic applied
+            marksObj[sub + "_HY"]  = getUniqueVal(base40, 5, freqExam, 40);
+            marksObj[sub + "_AN"]  = getUniqueVal(base40, 5, freqExam, 40);
         });
 
         await fetch(API, { 
@@ -258,7 +277,7 @@
         updateCount++;
     }
 
-    alert(updateCount + " STUDENTS UPDATED WITH UNIQUE MARKS!");
+    alert(updateCount + " STUDENTS UPDATED WITH HIGH VARIATION MARKS!");
     btn.disabled = false; btn.innerText = "UPLOAD ALL RANKS";
     sync();
 }
