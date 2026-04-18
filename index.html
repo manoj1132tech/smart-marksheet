@@ -167,7 +167,6 @@
     const ADMIN_PASS = "KRR@2026"; 
     let MASTER = [];
 
-    // FIX: Function to clean DOB from timestamps
     function cleanDOB(dateStr) {
         if(!dateStr) return "";
         let clean = dateStr.toString().split('T')[0];
@@ -214,7 +213,6 @@
         document.getElementById('gradeMarks').style.display = isGrade ? "grid" : "none";
     }
 
-    // Rank Logic
     function loadRankTable() {
         const cls = document.getElementById('rankClass').value;
         if(!cls) return;
@@ -274,7 +272,6 @@
         btn.disabled = true; btn.innerText = "SAVING...";
         await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "appendStudent", rowData: data}) });
         
-        // FIX: Clear Registration Fields after success
         ["rName", "rMother", "rFather", "rRoll"].forEach(id => document.getElementById(id).value = "");
         ["dobD", "dobM", "dobY"].forEach(id => document.getElementById(id).selectedIndex = 0);
         
@@ -377,6 +374,7 @@
                 let m = {}; try { m = JSON.parse(r[6] || "{}"); } catch(e) {}
                 let grandTotal = 0;
                 let subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+                
                 let tableRows = subjects.map(s => {
                     let u1 = Number(m[s+'_UT1']||0), hy = Number(m[s+'_HY']||0), u2 = Number(m[s+'_UT2']||0), an = Number(m[s+'_AN']||0);
                     let t = u1 + hy + u2 + an; grandTotal += t;
@@ -421,7 +419,7 @@
             }
         });
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><style>@page{size: A4; margin: 5mm;}</style></head><body>${content}</body></html>`);
+        win.document.write(`<html><head><style>@page{size: A4; margin: 5mm;} body{margin:0; font-family: sans-serif;}</style></head><body>${content}</body></html>`);
         win.document.close();
         setTimeout(() => win.print(), 1000);
     }
