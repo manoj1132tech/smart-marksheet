@@ -138,42 +138,86 @@
     }
 
     // --- RANK CALCULATION LOGIC ---
-    async function applyAutoRank() {
-        const i = document.getElementById('aStudent').value;
-        const rank = parseInt(document.getElementById('targetRank').value);
-        const btn = document.getElementById('autoRankBtn');
+   async function applyAutoRank() {
+    const i = document.getElementById('aStudent').value;
+    const rank = parseInt(document.getElementById('targetRank').value);
+    const btn = document.getElementById('autoRankBtn');
 
-        if(!i || !rank) return alert("SELECT STUDENT AND ENTER RANK!");
+    if(!i || !rank) return alert("SELECT STUDENT AND ENTER RANK!");
 
-        // Target Base Logic: Rank 1 (~95%), Rank 2 (~88%), Rank 3 (~82%), Others (~35-80%)
-        let baseTotal = rank === 1 ? 95 : rank === 2 ? 88 : rank === 3 ? 82 : Math.max(40, 80 - (rank * 3));
-        
-        const subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
-        let marksObj = {};
+    // 🔒 Extra security (double check password)
+    const pass = prompt("CONFIRM ADMIN PASSWORD:");
+    if(pass !== ADMIN_PASS) return alert("WRONG PASSWORD!");
 
-        subjects.forEach(sub => {
-            // Variation: Adds ±3 marks to make subjects look different
-            let variation = Math.floor(Math.random() * 7) - 3; 
-            let studentSubBase = Math.min(100, Math.max(33, baseTotal + variation));
+    // 🎯 Rank based base percentage
+    let baseTotal;
+    if(rank === 1) baseTotal = 94 + Math.random()*3;   // 94–97
+    else if(rank === 2) baseTotal = 87 + Math.random()*3; // 87–90
+    else if(rank === 3) baseTotal = 80 + Math.random()*3; // 80–83
+    else baseTotal = Math.max(40, 78 - (rank * 2) + Math.random()*4);
 
-            marksObj[sub + "_UT1"] = Math.round(studentSubBase * 0.1); // 10%
-            marksObj[sub + "_HY"] = Math.round(studentSubBase * 0.4);  // 40%
-            marksObj[sub + "_UT2"] = Math.round(studentSubBase * 0.1); // 10%
-            marksObj[sub + "_AN"] = Math.round(studentSubBase * 0.4);  // 40%
-        });
+    const subjects = [
+        "HINDI ORAL", "HINDI WRITTEN",
+        "ENGLISH ORAL", "ENGLISH WRITTEN",
+        "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"
+    ];
 
-        // Add Grades for activities
-        marksObj["STORY TELLING_TOTAL"] = baseTotal > 80 ? "A+" : (baseTotal > 60 ? "A" : "B");
-        marksObj["PHYSICAL ACTIVITY_TOTAL"] = baseTotal > 75 ? "A+" : "A";
+    let marksObj = {};
 
-        btn.disabled = true; btn.innerText = "CALCULATING & SAVING...";
-        
-        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj}) });
-        
-        alert(`SUCCESS: Rank ${rank} marks applied to ${MASTER[i][0]}!`);
-        btn.disabled = false; btn.innerText = "APPLY RANK & AUTO-FILL MARKS";
-        sync();
-    }
+    subjects.forEach(sub => {
+        // 🎲 Subject-wise variation (-5 to +5)
+        let variation = Math.floor(Math.random() * 11) - 5;
+        let finalPercent = Math.min(100, Math.max(33, baseTotal + variation));
+
+        // 🧠 Smart distribution (not exact % split)
+        let ut1 = Math.round((finalPercent * 0.1) + Math.random()*2);
+        let hy  = Math.round((finalPercent * 0.4) + Math.random()*3);
+        let ut2 = Math.round((finalPercent * 0.1) + Math.random()*2);
+        let an  = Math.round((finalPercent * 0.4) + Math.random()*3);
+
+        // 🔧 Limit fix (max caps)
+        ut1 = Math.min(10, ut1);
+        ut2 = Math.min(10, ut2);
+        hy  = Math.min(40, hy);
+        an  = Math.min(40, an);
+
+        marksObj[sub + "_UT1"] = ut1;
+        marksObj[sub + "_HY"]  = hy;
+        marksObj[sub + "_UT2"] = ut2;
+        marksObj[sub + "_AN"]  = an;
+    });
+
+    // ⭐ Activity Grades (dynamic)
+    marksObj["STORY TELLING_TOTAL"] =
+        baseTotal > 90 ? "A+" :
+        baseTotal > 75 ? "A" :
+        baseTotal > 60 ? "B" : "C";
+
+    marksObj["PHYSICAL ACTIVITY_TOTAL"] =
+        baseTotal > 85 ? "A+" :
+        baseTotal > 70 ? "A" : "B";
+
+    btn.disabled = true;
+    btn.innerText = "APPLYING & SAVING...";
+
+    // 📡 Google Sheets POST
+    await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }, // ✅ important fix
+        body: JSON.stringify({
+            action: "updateMarks",
+            rowIndex: parseInt(i),
+            marksObj: marksObj
+        })
+    });
+
+    alert(`✅ SUCCESS: Rank ${rank} applied to ${MASTER[i][0]}`);
+
+    btn.disabled = false;
+    btn.innerText = "APPLY RANK & AUTO-FILL MARKS";
+
+    sync();
+}
 
     // --- OTHER FUNCTIONS (RESTORED FROM YOUR CODE) ---
     async function register() {
