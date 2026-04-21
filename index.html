@@ -168,12 +168,13 @@
     const ADMIN_PASS = "KRR@2026"; 
     let MASTER = [];
 
-    // --- FIX: Logic to clean Time from Date of Birth ---
+    // --- UPDATED: DOB formatting to remove Timestamp ---
     function formatDOB(dobStr) {
         if(!dobStr) return "";
-        // Agar string mein 'T' hai (ISO format) toh split karke pehla hissa lo
+        // ISO string check (T ke baad ka time hatane ke liye)
         let clean = dobStr.toString().split('T')[0];
-        // Agar format YYYY-MM-DD hai toh usko DD/MM/YYYY karo
+        
+        // Agar date string mein "-" hai (YYYY-MM-DD), toh DD/MM/YYYY mein badlo
         if(clean.includes('-')) {
             let p = clean.split('-');
             if(p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
@@ -287,8 +288,6 @@
         await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "appendStudent", rowData: data}) });
         
         alert("REGISTERED!");
-        
-        // --- FIX: Form fields cleared after save ---
         document.getElementById('rName').value = "";
         document.getElementById('rMother').value = "";
         document.getElementById('rFather').value = "";
@@ -417,35 +416,28 @@
 
                 content += `
                 <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif;">
-                    
-                 
-<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
-    <div style="flex: 0 0 80px;">
-        <img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;">
-    </div>
-    <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
-        <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
-    </div>
-</div>
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
+                        <div style="flex: 0 0 80px;"><img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;"></div>
+                        <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
+                            <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
+                        </div>
+                    </div>
                     <center>
                         <h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3>
                         <div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div>
                     </center>
-                    
                     <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:#fcfcfc;">
                         <div>NAME: <b style="color:#1a237e;">${r[0]}</b></div>
                         <div style="padding-left:15%;">ROLL NO: <b style="color:#1a237e;">${r[4]}</b></div>
                         <div>FATHER'S NAME: <b style="color:#1a237e;">${r[2]}</b></div>
                         <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${r[1]}</b></div>
                         <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
-                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${r[5]}</b></div>
+                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${formatDOB(r[5])}</b></div>
                     </div>
-
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
                         <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
                         ${tableRows}
                     </table>
-
                     <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:#fff9f0; font-size:16px;">
                         <div style="display:flex; justify-content:space-between; font-weight:bold;">
                             <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
@@ -453,7 +445,6 @@
                             <span>RESULT: <span style="color:#d32f2f;">${status}</span></span>
                         </div>
                     </div>
-
                     <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                         <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;">
                             <b style="font-size:12px;">TEACHER REMARKS:</b><br>
@@ -464,12 +455,10 @@
                             <span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span>
                         </div>
                     </div>
-                    
                     <div style="margin-top:60px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
                     </div>
-
                     <div style="position:absolute; bottom:30px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px;">
                         ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿
                     </div>
@@ -482,10 +471,7 @@
         setTimeout(() => win.print(), 1000);
     }
     
-    // Initial sync on load
     sync();
 </script>
-</body>
-</html>
 </body>
 </html>
