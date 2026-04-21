@@ -168,13 +168,12 @@
     const ADMIN_PASS = "KRR@2026"; 
     let MASTER = [];
 
-    // --- UPDATED: DOB formatting to remove Timestamp ---
+    // --- FIXED: Logic to clean Time from Date of Birth ---
     function formatDOB(dobStr) {
         if(!dobStr) return "";
-        // ISO string check (T ke baad ka time hatane ke liye)
-        let clean = dobStr.toString().split('T')[0];
-        
-        // Agar date string mein "-" hai (YYYY-MM-DD), toh DD/MM/YYYY mein badlo
+        // Clean ISO 'T' or spaces
+        let clean = dobStr.toString().split('T')[0].split(' ')[0];
+        // Convert YYYY-MM-DD to DD/MM/YYYY if needed
         if(clean.includes('-')) {
             let p = clean.split('-');
             if(p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
@@ -249,7 +248,7 @@
             marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
             let freqUT = {}; 
             let freqExam = {};
-            function getUniqueVal(base, range, freqTracker, maxLimit) {
+            function getUniqueVal(base, range, freqTracker) {
                 let val; let attempts = 0;
                 do {
                     val = Math.floor(Math.max(base - range, base - (Math.random() * range)));
@@ -261,10 +260,10 @@
             subjects.forEach(sub => {
                 let base10 = 9.8 - (rank * 0.15);
                 let base40 = 38.8 - (rank * 0.6);
-                marksObj[sub + "_UT1"] = getUniqueVal(base10, 2, freqUT, 10);
-                marksObj[sub + "_UT2"] = getUniqueVal(base10, 2, freqUT, 10);
-                marksObj[sub + "_HY"]  = getUniqueVal(base40, 5, freqExam, 40);
-                marksObj[sub + "_AN"]  = getUniqueVal(base40, 5, freqExam, 40);
+                marksObj[sub + "_UT1"] = getUniqueVal(base10, 2, freqUT);
+                marksObj[sub + "_UT2"] = getUniqueVal(base10, 2, freqUT);
+                marksObj[sub + "_HY"]  = getUniqueVal(base40, 5, freqExam);
+                marksObj[sub + "_AN"]  = getUniqueVal(base40, 5, freqExam);
             });
             await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj}) });
             updateCount++;
@@ -286,15 +285,10 @@
         btn.disabled = true; btn.innerText = "SAVING...";
         
         await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "appendStudent", rowData: data}) });
-        
         alert("REGISTERED!");
-        document.getElementById('rName').value = "";
-        document.getElementById('rMother').value = "";
-        document.getElementById('rFather').value = "";
-        document.getElementById('rRoll').value = "";
-        document.getElementById('dobD').value = "";
-        document.getElementById('dobM').value = "";
-        document.getElementById('dobY').value = "";
+        
+        // Resetting Fields
+        ['rName','rMother','rFather','rRoll','dobD','dobM','dobY'].forEach(id => document.getElementById(id).value = "");
         
         btn.disabled = false; btn.innerText = "SAVE STUDENT DATA";
         sync();
@@ -397,6 +391,10 @@
                 let m = {}; try { m = JSON.parse(r[6] || "{}"); } catch(e) {}
                 let grandTotal = 0;
                 let subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+                
+                // --- FIX: DOB cleaning for Marksheet ---
+                let cleanDOB = formatDOB(r[5]);
+
                 let tableRows = subjects.map(s => {
                     let u1 = Number(m[s+'_UT1']||0);
                     let hy = Number(m[s+'_HY']||0);
@@ -432,7 +430,7 @@
                         <div>FATHER'S NAME: <b style="color:#1a237e;">${r[2]}</b></div>
                         <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${r[1]}</b></div>
                         <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
-                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${formatDOB(r[5])}</b></div>
+                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${cleanDOB}</b></div>
                     </div>
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
                         <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
@@ -446,22 +444,14 @@
                         </div>
                     </div>
                     <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;">
-                            <b style="font-size:12px;">TEACHER REMARKS:</b><br>
-                            <span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span>
-                        </div>
-                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;">
-                            <b style="font-size:12px;">PROMOTED TO CLASS:</b><br>
-                            <span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span>
-                        </div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;"><b style="font-size:12px;">TEACHER REMARKS:</b><br><span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span></div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;"><b style="font-size:12px;">PROMOTED TO CLASS:</b><br><span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span></div>
                     </div>
                     <div style="margin-top:60px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
                     </div>
-                    <div style="position:absolute; bottom:30px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px;">
-                        ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿
-                    </div>
+                    <div style="position:absolute; bottom:30px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px;">✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿</div>
                 </div>`;
             }
         });
