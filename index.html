@@ -28,25 +28,28 @@
         .action-btn { background: var(--gold); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         
         /* NEW: Watermark Style for Marksheet */
-        .watermark-container {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 250px;
-            z-index: -1;
-            opacity: 0.15;
-            background-image: 
-                url('https://img.icons8.com/color/144/sunflower.png'), 
-                url('https://img.icons8.com/color/96/butterfly.png'),
-                url('https://img.icons8.com/color/144/school-boy.png'),
-                url('https://img.icons8.com/color/144/school-girl.png');
-            background-repeat: no-repeat;
-            background-position: left bottom, right top, center bottom, 40% bottom;
-            background-size: 100px, 60px, 120px, 120px;
-            pointer-events: none;
-        }
+      .watermark-container {
+    position: absolute;
+    top: 350px; /* Thoda center mein lane ke liye */
+    left: 0;
+    right: 0;
+    bottom: 100px;
+    z-index: 0; /* -1 se behtar hai agar parent background transparent ho */
+    opacity: 0.12;
+    background-image: 
+        url('https://img.icons8.com/color/200/sunflower.png'), 
+        url('https://img.icons8.com/color/100/butterfly.png'),
+        url('https://img.icons8.com/color/200/school-boy.png'),
+        url('https://img.icons8.com/color/200/school-girl.png');
+    background-repeat: no-repeat;
+    background-position: 5% bottom, 85% 10%, 35% bottom, 65% bottom;
+    background-size: 150px, 80px, 180px, 180px;
+    pointer-events: none;
+    /* Yeh line sabse zaroori hai print ke liye */
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact;
+}
+        
 
         @media print { 
             .no-print { display: none; } 
@@ -473,29 +476,42 @@
             }
         });
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>PRINT</title>
-        <style>
-            @page{size: A4; margin: 5mm;} 
-            body{margin:0; background:#eee; font-family: 'Segoe UI', sans-serif;}
-            .watermark-container {
-                position: absolute;
-                bottom: 100px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 90%;
-                height: 300px;
-                z-index: -1;
-                opacity: 0.50;
-                background-image: 
-                    url('https://img.icons8.com/color/200/sunflower.png'), 
-                    url('https://img.icons8.com/color/100/butterfly.png'),
-                    url('https://img.icons8.com/color/200/school-boy.png'),
-                    url('https://img.icons8.com/color/200/school-girl.png');
-                background-repeat: no-repeat;
-                background-position: 5% bottom, 85% 10%, 40% bottom, 60% bottom;
-                background-size: 150px, 80px, 180px, 180px;
-            }
-        </style></head><body>${content}</body></html>`);
+     win.document.write(`<html><head><title>PRINT</title>
+<style>
+    @page { size: A4; margin: 5mm; } 
+    body { margin:0; background:#fff; font-family: 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; }
+    
+    .report-card-container {
+        position: relative; /* Watermark iske respect mein position hoga */
+        width: 190mm; 
+        min-height: 280mm; 
+        padding: 8mm; 
+        margin: 5mm auto; 
+        border: 10px double #1a237e; 
+        box-sizing: border-box; 
+        page-break-after: always; 
+        background: white;
+    }
+
+    .watermark-container {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 0;
+        opacity: 0.12;
+        background-image: 
+            url('https://img.icons8.com/color/200/sunflower.png'), 
+            url('https://img.icons8.com/color/100/butterfly.png'),
+            url('https://img.icons8.com/color/200/school-boy.png'),
+            url('https://img.icons8.com/color/200/school-girl.png');
+        background-repeat: no-repeat;
+        background-position: 5% 90%, 90% 10%, 30% 95%, 70% 95%;
+        background-size: 150px, 80px, 180px, 180px;
+        pointer-events: none;
+        -webkit-print-color-adjust: exact;
+    }
+    
+    table, div, h1, h3 { position: relative; z-index: 1; } /* Content ko watermark ke upar laane ke liye */
+</style></head>...`);
         win.document.close();
         setTimeout(() => win.print(), 1000);
     }
