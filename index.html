@@ -3,170 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRR Junior School - Full Portal</title>
+    <title>KRR Junior School - Portal</title>
     <style>
-        :root { --blue: #1a237e; --red: #d32f2f; --gold: #b8860b; }
+        :root { --blue: #1a237e; --red: #d32f2f; --gold: #b8860b; --black: #000000; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; text-transform: uppercase; }
-        
-        /* Decoration Styles */
-        .butterfly-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0.2; }
-        .footer-flowers { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: url('https://img.icons8.com/color/96/sunflower.png') repeat-x; background-size: 60px; z-index: -1; border-top: 3px solid #4CAF50; }
-
-        .nav-bar { background: var(--blue); padding: 10px; text-align: center; color: white; position: sticky; top:0; z-index:1000; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: 1px solid white; color: white; padding: 10px 15px; cursor: pointer; margin: 5px; border-radius: 4px; }
-        .nav-btn.active { background: var(--red); }
-        
-        .container { max-width: 1000px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-bar { background: var(--blue); padding: 10px; text-align: center; color: white; position: sticky; top:0; z-index:1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .nav-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px 20px; cursor: pointer; border-radius: 5px; margin: 3px; font-weight: bold; transition: 0.3s; }
+        .nav-btn.active { background: var(--red); border-color: white; }
+        .container { max-width: 900px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .page { display: none; }
         .page.active { display: block; }
-        
-        input, select { padding: 10px; width: 100%; box-sizing: border-box; margin: 5px 0; border: 1px solid #ccc; text-transform: uppercase; }
-        .btn-save { background: #2e7d32; color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        h2 { color: var(--blue); border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-top: 0; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #555; }
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; text-transform: uppercase; width: 100%; box-sizing: border-box; }
+        .dob-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+        .btn-save { background: #2e7d32; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-save:hover { background: #1b5e20; }
+        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background: var(--blue); color: white; }
-
-        @media print { .no-print { display: none; } body { background: white; } }
+        .action-btn { background: var(--gold); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        @media print { 
+            .no-print { display: none; } 
+            @page { size: A4; margin: 5mm; }
+            body { background: white; -webkit-print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
 
-<div class="butterfly-bg no-print">
-    <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:10%; left:5%; width:40px;">
-    <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:50%; left:85%; width:50px;">
-</div>
-<div class="footer-flowers no-print"></div>
-
 <div class="nav-bar no-print">
-    <h2 style="margin:5px;">K.R.R. JUNIOR SCHOOL</h2>
-    <button class="nav-btn active" onclick="show('reg')">REGISTRATION</button>
-    <button class="nav-btn" onclick="show('edit')">EDIT / SEARCH</button>
-    <button class="nav-btn" onclick="show('marks')">MARKS ENTRY</button>
-    <button class="nav-btn" onclick="show('print')">PRINT MARKSHEET</button>
+    <h2 style="color:white; border:none; margin:5px 0;">K.R.R. JUNIOR SCHOOL</h2>
+    <button class="nav-btn active" onclick="openPage('regPage')">REGISTRATION</button>
+    <button class="nav-btn" onclick="openPage('editPage')">EDIT DETAILS</button>
+    <button class="nav-btn" onclick="openPage('marksPage')">MARKS ENTRY</button>
+    <button class="nav-btn" onclick="openPage('adminPage')">ADMIN PANEL</button>
 </div>
 
 <div class="container no-print">
-    <div id="reg" class="page active">
-        <h3>New Registration</h3>
-        <input type="text" id="rName" placeholder="STUDENT NAME">
-        <input type="text" id="rFather" placeholder="FATHER'S NAME">
-        <select id="rClass"><option>NURSERY</option><option>LKG</option><option>UKG</option></select>
-        <input type="text" id="rDob" placeholder="DOB (DD/MM/YYYY)">
-        <button class="btn-save" onclick="saveData('new')">SAVE STUDENT</button>
+    <div id="regPage" class="page active">
+        <h2>Student Registration</h2>
+        <div class="form-grid">
+            <div class="input-group"><label>Student Name</label><input type="text" id="rName"></div>
+            <div class="input-group"><label>Mother's Name</label><input type="text" id="rMother"></div>
+            <div class="input-group"><label>Father's Name</label><input type="text" id="rFather"></div>
+            <div class="input-group"><label>Roll No / SR No</label><input type="text" id="rRoll"></div>
+            <div class="input-group">
+                <label>Class</label>
+                <select id="rClass">
+                    <option value="NURSERY">NURSERY</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <div class="dob-grid">
+                    <select id="dobD"><option value="">DD</option></select>
+                    <select id="dobM"><option value="">MM</option></select>
+                    <select id="dobY"><option value="">YYYY</option></select>
+                </div>
+            </div>
+        </div>
+        <button class="btn-save" id="regBtn" onclick="register()">SAVE STUDENT DATA</button>
     </div>
 
-    <div id="edit" class="page">
-        <h3>Edit Student Details</h3>
-        <input type="text" id="searchInp" onkeyup="searchStudent()" placeholder="SEARCH BY NAME...">
-        <div id="editList"></div>
+    <div id="editPage" class="page">
+        <h2>Edit Student Records</h2>
+        <select id="eClass" onchange="loadEditTable()" style="margin-bottom: 20px;">
+            <option value="">-- SELECT CLASS --</option>
+            <option>NURSERY</option><option>LKG</option><option>UKG</option>
+        </select>
+        <div id="editArea" style="overflow-x:auto;"></div>
     </div>
 
-    <div id="marks" class="page">
-        <h3>Manual Marks & Rank Entry</h3>
-        <select id="mClass" onchange="loadMarksList()"><option>SELECT CLASS</option><option>NURSERY</option><option>LKG</option><option>UKG</option></select>
-        <div id="marksList"></div>
+    <div id="marksPage" class="page">
+        <h2>Marks Entry</h2>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>1. Select Class</label>
+                <select id="mClass" onchange="filterStudents()">
+                    <option value="">-- CHOOSE --</option>
+                    <option>NURSERY</option><option>LKG</option><option>UKG</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>2. Select Student</label>
+                <select id="mStudent" onchange="showStudentDetail()"></select>
+            </div>
+        </div>
+        <div id="mDetailBox" style="padding:15px; background:#e3f2fd; margin-bottom:15px; border-radius:5px; display:none; border-left: 5px solid var(--blue);"></div>
+        
+        <div id="marksForm" style="display:none;">
+            <div class="input-group">
+                <label>Select Subject</label>
+                <select id="mSub" onchange="handleSubjectChange()">
+                    <option value="">-- SELECT SUBJECT --</option>
+                    <option value="HINDI ORAL">HINDI ORAL</option>
+                    <option value="HINDI WRITTEN">HINDI WRITTEN</option>
+                    <option value="ENGLISH ORAL">ENGLISH ORAL</option>
+                    <option value="ENGLISH WRITTEN">ENGLISH WRITTEN</option>
+                    <option value="MATHEMATICS ORAL">MATHEMATICS ORAL</option>
+                    <option value="MATHEMATICS WRITTEN">MATHEMATICS WRITTEN</option>
+                    <option value="STORY TELLING">STORY TELLING (GRADE)</option>
+                    <option value="PHYSICAL ACTIVITY">PHYSICAL ACTIVITY (GRADE)</option>
+                </select>
+            </div>
+
+            <div id="normalMarks" class="form-grid" style="margin-top:15px;">
+                <div class="input-group"><label>UT-1 (10)</label><input type="number" id="v1" max="10" oninput="validateScore(this, 10)"></div>
+                <div class="input-group"><label>HY EXAM (40)</label><input type="number" id="v2" max="40" oninput="validateScore(this, 40)"></div>
+                <div class="input-group"><label>UT-2 (10)</label><input type="number" id="v3" max="10" oninput="validateScore(this, 10)"></div>
+                <div class="input-group"><label>ANNUAL EXAM (40)</label><input type="number" id="v4" max="40" oninput="validateScore(this, 40)"></div>
+            </div>
+
+            <div id="gradeMarks" class="form-grid" style="margin-top:15px; display:none;">
+                <div class="input-group"><label>Overall Grade</label>
+                    <select id="gVal">
+                        <option value="A+">A+</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-save" id="marksBtn" onclick="saveMarks()" style="margin-top:15px;">UPDATE DATA</button>
+        </div>
     </div>
 
-    <div id="print" class="page">
-        <h3>Print Marksheets</h3>
-        <select id="pClass"><option>NURSERY</option><option>LKG</option><option>UKG</option></select>
-        <button class="btn-save" style="background:var(--red)" onclick="generatePrint()">GENERATE ALL MARKSHEETS</button>
+    <div id="adminPage" class="page">
+        <h2>Admin Management</h2>
+        
+        <div style="padding:20px; border:2px solid var(--blue); border-radius:8px; margin-bottom:20px; background: #f9f9f9;">
+            <h3 style="margin-top:0; color:var(--blue);">RANK-WISE QUICK MARKS FILL</h3>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Select Class</label>
+                    <select id="rankClass" onchange="loadRankTable()">
+                        <option value="">-- SELECT --</option>
+                        <option>NURSERY</option><option>LKG</option><option>UKG</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Action</label>
+                    <button class="btn-save" id="bulkBtn" onclick="processBulkRanks()">UPLOAD ALL RANKS</button>
+                </div>
+            </div>
+            <div id="rankTableArea" style="margin-top:15px;"></div>
+        </div>
+
+        <div style="padding:20px; border:1px solid #ddd; border-radius:8px;">
+            <label>Print Marksheets for Class</label>
+            <select id="pClass" style="margin:10px 0;"><option>NURSERY</option><option>LKG</option><option>UKG</option></select>
+            <button class="btn-save" style="background:var(--red);" onclick="printAll()">GENERATE ALL MARKSHEETS</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const API = "YOUR_GOOGLE_SCRIPT_URL_HERE"; 
-    let DATA = [];
+    const API = "https://script.google.com/macros/s/AKfycbxAKoRnMfGQKmF0QwYFv4s-VjbI7-NXFCS_fL5kKwehsgBhSj2aNFQEYfdX0Z8Lt5GTVA/exec"; 
+    const ADMIN_PASS = "KRR@2026"; 
+    let MASTER = [];
 
-    async function sync() {
-        try {
-            const r = await fetch(API);
-            DATA = await r.json();
-            console.log("Synced");
-        } catch(e) { alert("Sync Error"); }
+    function formatDOB(dobStr) {
+        if(!dobStr) return "";
+        let clean = dobStr.toString().split('T')[0].split(' ')[0];
+        if(clean.includes('-')) {
+            let p = clean.split('-');
+            if(p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
+        }
+        return clean;
     }
 
-    function show(id) {
+    for(let i=1; i<=31; i++) document.getElementById('dobD').add(new Option(i < 10 ? '0'+i : i, i < 10 ? '0'+i : i));
+    const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    months.forEach((m, i) => document.getElementById('dobM').add(new Option(m, (i+1) < 10 ? '0'+(i+1) : (i+1))));
+    for(let i=2024; i>=2015; i--) document.getElementById('dobY').add(new Option(i, i));
+
+    function openPage(pageId) {
+        if(pageId === 'adminPage') {
+            let p = prompt("ENTER ADMIN PASSWORD:");
+            if(p !== ADMIN_PASS) { alert("ACCESS DENIED!"); return; }
+        }
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.target.classList.add('active');
+        document.getElementById(pageId).classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
         sync();
     }
 
-    // --- System Logic: Rank & Marks ---
-    function loadMarksList() {
-        const cls = document.getElementById('mClass').value;
-        let html = '<table><tr><th>NAME</th><th>RANK (Type)</th><th>ACTION</th></tr>';
-        DATA.forEach((s, i) => {
-            if(i > 0 && s[3] === cls) {
+    async function sync() {
+        try { 
+            const res = await fetch(API); 
+            MASTER = await res.json(); 
+            if(document.getElementById('editPage').classList.contains('active')) loadEditTable(); 
+        } catch (e) { console.error("Sync failed", e); }
+    }
+
+    function validateScore(input, max) { 
+        if (Number(input.value) > max) { alert("Maximum marks allowed: " + max); input.value = max; } 
+    }
+
+    function handleSubjectChange() {
+        const sub = document.getElementById('mSub').value;
+        const isGrade = (sub === "STORY TELLING" || sub === "PHYSICAL ACTIVITY");
+        document.getElementById('normalMarks').style.display = isGrade ? "none" : "grid";
+        document.getElementById('gradeMarks').style.display = isGrade ? "grid" : "none";
+    }
+
+    function loadRankTable() {
+        const cls = document.getElementById('rankClass').value;
+        if(!cls) return;
+        let html = `<table><tr><th>ROLL</th><th>NAME</th><th>ENTER RANK (1,2,3...)</th></tr>`;
+        MASTER.forEach((r, i) => {
+            if(i > 0 && r[3] === cls) {
+                html += `<tr><td>${r[4]}</td><td>${r[0]}</td>
+                <td><input type="number" class="rank-input" data-idx="${i}" placeholder="Rank"></td></tr>`;
+            }
+        });
+        document.getElementById('rankTableArea').innerHTML = html + "</table>";
+    }
+
+    async function processBulkRanks() {
+        const btn = document.getElementById('bulkBtn');
+        const inputs = document.querySelectorAll('.rank-input');
+        const subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+        let updateCount = 0;
+        btn.disabled = true; btn.innerText = "PROCESSING...";
+
+        for(let input of inputs) {
+            const rank = parseInt(input.value);
+            const idx = input.getAttribute('data-idx');
+            if(!rank) continue;
+            let marksObj = {};
+            const grade = rank <= 3 ? "A+" : (rank <= 10 ? "A" : "B");
+            marksObj["STORY TELLING_TOTAL"] = grade;
+            marksObj["PHYSICAL ACTIVITY_TOTAL"] = grade;
+            let freqUT = {}; 
+            let freqExam = {};
+            function getUniqueVal(base, range, freqTracker) {
+                let val; let attempts = 0;
+                do {
+                    val = Math.floor(Math.max(base - range, base - (Math.random() * range)));
+                    attempts++;
+                } while (freqTracker[val] >= 3 && attempts < 10); 
+                freqTracker[val] = (freqTracker[val] || 0) + 1;
+                return val;
+            }
+            subjects.forEach(sub => {
+                let base10 = 9.8 - (rank * 0.15);
+                let base40 = 38.8 - (rank * 0.6);
+                marksObj[sub + "_UT1"] = getUniqueVal(base10, 2, freqUT);
+                marksObj[sub + "_UT2"] = getUniqueVal(base10, 2, freqUT);
+                marksObj[sub + "_HY"]  = getUniqueVal(base40, 5, freqExam);
+                marksObj[sub + "_AN"]  = getUniqueVal(base40, 5, freqExam);
+            });
+            await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(idx), marksObj: marksObj}) });
+            updateCount++;
+        }
+        alert(updateCount + " STUDENTS UPDATED!");
+        btn.disabled = false; btn.innerText = "UPLOAD ALL RANKS";
+        sync();
+    }
+
+    async function register() {
+        const btn = document.getElementById('regBtn');
+        const d = document.getElementById('dobD').value;
+        const m = document.getElementById('dobM').value;
+        const y = document.getElementById('dobY').value;
+        if(!d || !m || !y) return alert("SELECT FULL DATE OF BIRTH");
+        const dob = `${d}/${m}/${y}`;
+        const data = [document.getElementById('rName').value, document.getElementById('rMother').value, document.getElementById('rFather').value, document.getElementById('rClass').value, document.getElementById('rRoll').value, dob];
+        if(!data[0] || !data[1]) return alert("NAME & MOTHER NAME REQUIRED");
+        btn.disabled = true; btn.innerText = "SAVING...";
+        
+        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "appendStudent", rowData: data}) });
+        alert("REGISTERED!");
+        
+        ['rName','rMother','rFather','rRoll','dobD','dobM','dobY'].forEach(id => document.getElementById(id).value = "");
+        
+        btn.disabled = false; btn.innerText = "SAVE STUDENT DATA";
+        sync();
+    }
+
+    function loadEditTable() {
+        const cls = document.getElementById('eClass').value;
+        if(!cls) return;
+        let html = `<table><tr><th>NAME</th><th>FATHER</th><th>DOB</th><th>ACTION</th></tr>`;
+        MASTER.forEach((r, i) => {
+            if(i > 0 && r[3] === cls) {
                 html += `<tr>
-                    <td>${s[0]}</td>
-                    <td><input type="text" id="rank_${i}" value="${s[7]||''}" placeholder="e.g. 1st"></td>
-                    <td><button onclick="openMarksModal(${i})">ENTER MARKS</button></td>
+                    <td><input type="text" id="en${i}" value="${r[0]}"></td>
+                    <td><input type="text" id="ef${i}" value="${r[2]}"></td>
+                    <td><input type="text" id="ed${i}" value="${formatDOB(r[5])}"></td>
+                    <td><button class="action-btn" onclick="updateRecord(${i},'${r[1]}','${r[3]}','${r[4]}')">SAVE</button></td>
                 </tr>`;
             }
         });
-        document.getElementById('marksList').innerHTML = html + '</table>';
+        document.getElementById('editArea').innerHTML = html + "</table>";
     }
 
-    function generatePrint() {
+    async function updateRecord(idx, moth, cls, roll) {
+        const newData = [document.getElementById(`en${idx}`).value, moth, document.getElementById(`ef${idx}`).value, cls, roll, document.getElementById(`ed${idx}`).value];
+        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateDetails", rowIndex: idx, newData: newData}) });
+        alert("UPDATE SENT!"); sync();
+    }
+
+    function filterStudents() {
+        const cls = document.getElementById('mClass').value;
+        const sel = document.getElementById('mStudent');
+        sel.innerHTML = '<option value="">-- SELECT STUDENT --</option>';
+        MASTER.forEach((r, i) => { if(i > 0 && r[3] === cls) sel.add(new Option(r[0], i)); });
+    }
+
+    function showStudentDetail() {
+        const i = document.getElementById('mStudent').value;
+        if(!i) return;
+        document.getElementById('mDetailBox').innerHTML = `
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px;">
+                <div><b>STUDENT:</b> ${MASTER[i][0]}</div>
+                <div style="padding-left:15%;"><b>ROLL NO:</b> ${MASTER[i][4]}</div>
+                <div><b>FATHER:</b> ${MASTER[i][2]}</div>
+                <div style="padding-left:15%;"><b>MOTHER:</b> ${MASTER[i][1]}</div>
+                <div style="grid-column: span 1;"><b>CLASS:</b> ${MASTER[i][3]}</div>
+                <div style="padding-left:15%;"><b>DOB:</b> ${formatDOB(MASTER[i][5])}</div>
+            </div>`;
+        document.getElementById('mDetailBox').style.display = 'block';
+        document.getElementById('marksForm').style.display = 'block';
+    }
+
+    async function saveMarks() {
+        const btn = document.getElementById('marksBtn');
+        const i = document.getElementById('mStudent').value;
+        const sub = document.getElementById('mSub').value;
+        if(!sub) return alert("SELECT SUBJECT");
+        let marksObj = {};
+        if(sub === "STORY TELLING" || sub === "PHYSICAL ACTIVITY") {
+            marksObj[sub + "_TOTAL"] = document.getElementById('gVal').value;
+        } else {
+            marksObj[sub + "_UT1"] = document.getElementById('v1').value;
+            marksObj[sub + "_HY"] = document.getElementById('v2').value;
+            marksObj[sub + "_UT2"] = document.getElementById('v3').value;
+            marksObj[sub + "_AN"] = document.getElementById('v4').value;
+        }
+        btn.disabled = true; btn.innerText = "UPDATING...";
+        await fetch(API, { method: "POST", mode: 'no-cors', body: JSON.stringify({action: "updateMarks", rowIndex: parseInt(i), marksObj: marksObj}) });
+        alert("DATA UPDATED!"); btn.disabled = false; btn.innerText = "UPDATE DATA";
+        sync();
+    }
+
+    function getStars(score, isGrade = false) {
+        let stars = "";
+        if(isGrade) {
+            if(score === 'A+') stars = '★★★★★';
+            else if(score === 'A') stars = '★★★★';
+            else if(score === 'B') stars = '★★★';
+            else stars = '★★';
+        } else {
+            if(score >= 90) stars = '★★★★★';
+            else if(score >= 75) stars = '★★★★';
+            else if(score >= 60) stars = '★★★';
+            else if(score >= 45) stars = '★★';
+            else stars = '★';
+        }
+        return `<span style="color:#ffd700;">${stars}</span>`;
+    }
+
+    function prefixZero(val) {
+        if(val === "" || val === null || val === undefined) return "00";
+        let n = Number(val);
+        return n < 10 ? "0" + n : n;
+    }
+
+    function printAll() {
         const cls = document.getElementById('pClass').value;
         let content = '';
-
-        DATA.forEach((r, i) => {
+        MASTER.forEach((r, i) => {
             if(i > 0 && r[3] === cls) {
+                let m = {}; try { m = JSON.parse(r[6] || "{}"); } catch(e) {}
+                let grandTotal = 0;
+                let subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
+                let cleanDOB = formatDOB(r[5]);
+
+                let tableRows = subjects.map(s => {
+                    let u1 = Number(m[s+'_UT1']||0);
+                    let hy = Number(m[s+'_HY']||0);
+                    let u2 = Number(m[s+'_UT2']||0);
+                    let an = Number(m[s+'_AN']||0);
+                    let t = u1 + hy + u2 + an;
+                    grandTotal += t;
+                    return `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">${s}</td><td>${prefixZero(u1)}</td><td>${hy}</td><td>${prefixZero(u2)}</td><td>${an}</td><td style="color:#d32f2f; font-weight:bold;">${t}</td><td>${getStars(t)}</td></tr>`;
+                }).join('');
+                
+                tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">STORY TELLING</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['STORY TELLING_TOTAL']||'-'}</td><td>${getStars(m['STORY TELLING_TOTAL'], true)}</td></tr>`;
+                tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">PHYSICAL ACTIVITY</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['PHYSICAL ACTIVITY_TOTAL']||'-'}</td><td>${getStars(m['PHYSICAL ACTIVITY_TOTAL'], true)}</td></tr>`;
+
+                let perc = (grandTotal / 6).toFixed(2);
+                let status = grandTotal >= 198 ? "PASSED" : "FAILED";
+                let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1ST");
+
                 content += `
-                <div class="marksheet-card" style="width:190mm; min-height:275mm; border:8px double var(--blue); margin:10px auto; padding:15px; position:relative; background:white; page-break-after:always;">
+                <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif;">
                     
-                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.07; pointer-events:none;">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:15%; left:10%; width:60px;">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:45%; left:75%; width:50px;">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:75%; left:15%; width:70px;">
-                    </div>
+                    <div style="position:absolute; bottom:0; left:0; width:100%; height:60px; background:url('https://img.icons8.com/color/96/sunflower.png') repeat-x; background-size:55px; border-top:3px solid #4CAF50; z-index:1;"></div>
 
-                    <div style="position:absolute; bottom:0; left:0; width:100%; height:60px; background:url('https://img.icons8.com/color/96/sunflower.png') repeat-x; background-size:55px; border-top:2px solid green;"></div>
-
-                    <div style="display:flex; align-items:center; border-bottom:2px solid var(--blue); padding-bottom:10px;">
-                        <img src="logo.jpg" style="width:85px; height:85px; margin-right:15px;">
-                        <div style="text-align:center; flex:1;">
-                            <h1 style="margin:0; color:var(--blue); font-size:28px;">K.R.R. JUNIOR HIGH SCHOOL</h1>
-                            <p style="margin:2px; font-weight:bold;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
+                        <div style="flex: 0 0 80px;"><img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;"></div>
+                        <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
+                            <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
                         </div>
                     </div>
-
                     <center>
-                        <h4 style="margin:10px; color:var(--gold);">PROGRESS REPORT (2025-26)</h4>
+                        <h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3>
+                        <div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div>
                     </center>
-
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0; border:1px solid #000; padding:10px; font-size:14px;">
-                        <div>NAME: <b>${r[0]}</b></div>
-                        <div>ROLL NO: <b>${r[4]||''}</b></div>
-                        <div>FATHER: <b>${r[2]}</b></div>
-                        <div>RANK: <b>${r[7]||'---'}</b></div>
+                    <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:#fcfcfc;">
+                        <div>NAME: <b style="color:#1a237e;">${r[0]}</b></div>
+                        <div style="padding-left:15%;">ROLL NO: <b style="color:#1a237e;">${r[4]}</b></div>
+                        <div>FATHER'S NAME: <b style="color:#1a237e;">${r[2]}</b></div>
+                        <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${r[1]}</b></div>
+                        <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
+                        <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${cleanDOB}</b></div>
                     </div>
-
-                    <table border="1" style="width:100%; text-align:center; border-collapse:collapse;">
-                        <tr style="background:#eee;"><th>SUBJECT</th><th>ORAL</th><th>WRITTEN</th><th>TOTAL</th></tr>
-                        <tr><td>HINDI</td><td>45</td><td>42</td><td>87</td></tr>
-                        <tr><td>ENGLISH</td><td>44</td><td>40</td><td>84</td></tr>
-                        <tr><td>MATHS</td><td>48</td><td>46</td><td>94</td></tr>
+                    <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px;">
+                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
+                        ${tableRows}
                     </table>
-
-                    <div style="margin-top:30px; display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>TEACHER SIGN</span>
-                        <span>PRINCIPAL SIGN</span>
+                    <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:#fff9f0; font-size:16px;">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                            <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
+                            <span>PERCENTAGE: <span style="color:#d32f2f;">${perc}%</span></span>
+                            <span>RESULT: <span style="color:#d32f2f;">${status}</span></span>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;"><b style="font-size:12px;">TEACHER REMARKS:</b><br><span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span></div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:#f0f4ff;"><b style="font-size:12px;">PROMOTED TO CLASS:</b><br><span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span></div>
+                    </div>
+                    <div style="margin-top:40px; padding-bottom:70px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
+                        <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
+                        <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
                     </div>
                 </div>`;
             }
         });
-
-        const w = window.open();
-        w.document.write(`<html><head><style>body{background:#f0f0f0; margin:0;} .marksheet-card{text-transform:uppercase; font-family:sans-serif;}</style></head><body>${content}</body></html>`);
-        w.document.close();
+        const win = window.open('', '_blank');
+        win.document.write(`<html><head><title>PRINT</title><style>@page{size: A4; margin: 5mm;} body{margin:0; background:#eee; -webkit-print-color-adjust: exact;}</style></head><body>${content}</body></html>`);
+        win.document.close();
+        setTimeout(() => win.print(), 1000);
     }
-
+    
     sync();
 </script>
 </body>
