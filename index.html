@@ -382,6 +382,28 @@
 function printAll() {
         const cls = document.getElementById('pClass').value;
         let content = '';
+        
+        // Sunflowers and Butterflies Scattered Locations Generator
+        const generateScatteredHTML = () => {
+            const icons = [
+                'https://img.icons8.com/color/100/sunflower.png',
+                'https://img.icons8.com/color/80/butterfly.png'
+            ];
+            let html = '';
+            // Generate 15 random icons per marksheet
+            for (let j = 0; j < 15; j++) {
+                const icon = icons[Math.floor(Math.random() * icons.length)];
+                // Random position within 90% of page width/height to avoid edges
+                const top = Math.random() * 90; 
+                const left = Math.random() * 90;
+                // Random slight rotation for scattered effect
+                const rotate = (Math.random() - 0.5) * 60; 
+                
+                html += `<img src="${icon}" style="position:absolute; top:${top}%; left:${left}%; width:50px; opacity:0.1; transform:rotate(${rotate}deg); z-index:0;">`;
+            }
+            return html;
+        };
+
         MASTER.forEach((r, i) => {
             if(i > 0 && r[3] === cls) {
                 let m = {}; try { m = JSON.parse(r[6] || "{}"); } catch(e) {}
@@ -408,20 +430,26 @@ function printAll() {
 
                 content += `
                 <div class="report-card-container">
-                    <div class="watermark-pattern"></div>
+                    <div class="watermark-scattered-layer">
+                        ${generateScatteredHTML()}
+                    </div>
+                    
                     <div class="character-boy"></div>
                     <div class="character-girl"></div>
-                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
-                        <img src="logo.jpg" style="height:80px; position:absolute; left:20px;" onerror="this.style.display='none'">
-                        <div style="flex: 1; text-align: center;"> 
+
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px; position:relative; min-height:80px;">
+                        <img src="logo.jpg" style="height:80px; position:absolute; left:10px; top:0; z-index:2;" onerror="this.style.display='none'">
+                        <div style="flex: 1; text-align: center; padding: 0 90px;"> 
                             <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
                             <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
                         </div>
                     </div>
+
                     <center>
                         <h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3>
                         <div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div>
                     </center>
+
                     <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:rgba(252,252,252,0.8); text-transform:uppercase;">
                         <div>NAME: <b style="color:#1a237e;">${String(r[0]).toUpperCase()}</b></div>
                         <div style="padding-left:15%;">ROLL NO: <b style="color:#1a237e;">${r[4]}</b></div>
@@ -430,21 +458,25 @@ function printAll() {
                         <div>CLASS: <b style="color:#1a237e;">${String(r[3]).toUpperCase()}</b></div>
                         <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${cleanDOB}</b></div>
                     </div>
+
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px; background:rgba(255,255,255,0.7);">
                         <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>RATING</th></tr>
                         ${tableRows}
                     </table>
-                    <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:rgba(255,249,240,0.9); font-size:16px;">
+
+                    <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:rgba(255,249,240,0.9); font-size:16px; text-transform:uppercase;">
                         <div style="display:flex; justify-content:space-between; font-weight:bold;">
                             <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
                             <span>PERCENTAGE: <span style="color:#d32f2f;">${perc}%</span></span>
                             <span>RESULT: <span style="color:#d32f2f;">${status.toUpperCase()}</span></span>
                         </div>
                     </div>
-                    <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+
+                    <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-transform:uppercase;">
                         <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:rgba(240,244,255,0.9);"><b style="font-size:12px;">TEACHER REMARKS:</b><br><span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span></div>
                         <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:rgba(240,244,255,0.9);"><b style="font-size:12px;">PROMOTED TO CLASS:</b><br><span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls.toUpperCase() : cls.toUpperCase()}</span></div>
                     </div>
+
                     <div style="margin-top:60px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
@@ -474,20 +506,14 @@ function printAll() {
                         background: white;
                         overflow: hidden;
                     }
-                    /* Scattered Sunflowers and Butterflies */
-                    .watermark-pattern {
+                    /* Scattered Layer Container */
+                    .watermark-scattered-layer {
                         position: absolute;
                         top: 0; left: 0; width: 100%; height: 100%;
                         z-index: 0;
-                        opacity: 0.1;
-                        background-image: 
-                            url('https://img.icons8.com/color/100/sunflower.png'), 
-                            url('https://img.icons8.com/color/80/butterfly.png');
-                        background-repeat: repeat;
-                        background-position: 0 0, 50px 50px;
-                        background-size: 100px, 60px;
+                        pointer-events: none;
                     }
-                    /* Fixed School Characters at Bottom */
+                    /* Characters Fixed at Bottom */
                     .character-boy {
                         position: absolute;
                         bottom: 40px; left: 30px;
@@ -496,6 +522,7 @@ function printAll() {
                         background-size: contain;
                         opacity: 0.15;
                         z-index: 0;
+                        pointer-events: none;
                     }
                     .character-girl {
                         position: absolute;
@@ -503,8 +530,9 @@ function printAll() {
                         width: 150px; height: 150px;
                         background: url('https://img.icons8.com/color/200/school-girl.png') no-repeat;
                         background-size: contain;
-                        opacity: 0.50;
+                        opacity: 0.55;
                         z-index: 0;
+                        pointer-events: none;
                     }
                     table, div, h1, h3, center, img { position: relative; z-index: 1; }
                 </style>
