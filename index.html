@@ -26,30 +26,6 @@
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background: var(--blue); color: white; }
         .action-btn { background: var(--gold); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        
-        /* NEW: Watermark Style for Marksheet */
-      .watermark-container {
-    position: absolute;
-    top: 350px; /* Thoda center mein lane ke liye */
-    left: 0;
-    right: 0;
-    bottom: 100px;
-    z-index: 0; /* -1 se behtar hai agar parent background transparent ho */
-    opacity: 0.12;
-    background-image: 
-        url('https://img.icons8.com/color/200/sunflower.png'), 
-        url('https://img.icons8.com/color/100/butterfly.png'),
-        url('https://img.icons8.com/color/200/school-boy.png'),
-        url('https://img.icons8.com/color/200/school-girl.png');
-    background-repeat: no-repeat;
-    background-position: 5% bottom, 85% 10%, 35% bottom, 65% bottom;
-    background-size: 150px, 80px, 180px, 180px;
-    pointer-events: none;
-    /* Yeh line sabse zaroori hai print ke liye */
-    -webkit-print-color-adjust: exact; 
-    print-color-adjust: exact;
-}
-        
 
         @media print { 
             .no-print { display: none; } 
@@ -432,8 +408,11 @@ function printAll() {
 
                 content += `
                 <div class="report-card-container">
-                    <div class="watermark-container"></div>
+                    <div class="watermark-pattern"></div>
+                    <div class="character-boy"></div>
+                    <div class="character-girl"></div>
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
+                        <img src="logo.jpg" style="height:80px; position:absolute; left:20px;" onerror="this.style.display='none'">
                         <div style="flex: 1; text-align: center;"> 
                             <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
                             <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
@@ -443,12 +422,12 @@ function printAll() {
                         <h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3>
                         <div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div>
                     </center>
-                    <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:rgba(252,252,252,0.8);">
-                        <div>NAME: <b style="color:#1a237e;">${r[0]}</b></div>
+                    <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:rgba(252,252,252,0.8); text-transform:uppercase;">
+                        <div>NAME: <b style="color:#1a237e;">${String(r[0]).toUpperCase()}</b></div>
                         <div style="padding-left:15%;">ROLL NO: <b style="color:#1a237e;">${r[4]}</b></div>
-                        <div>FATHER'S NAME: <b style="color:#1a237e;">${r[2]}</b></div>
-                        <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${r[1]}</b></div>
-                        <div>CLASS: <b style="color:#1a237e;">${r[3]}</b></div>
+                        <div>FATHER'S NAME: <b style="color:#1a237e;">${String(r[2]).toUpperCase()}</b></div>
+                        <div style="padding-left:15%;">MOTHER'S NAME: <b style="color:#1a237e;">${String(r[1]).toUpperCase()}</b></div>
+                        <div>CLASS: <b style="color:#1a237e;">${String(r[3]).toUpperCase()}</b></div>
                         <div style="padding-left:15%;">D.O.B: <b style="color:#1a237e;">${cleanDOB}</b></div>
                     </div>
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px; background:rgba(255,255,255,0.7);">
@@ -459,18 +438,18 @@ function printAll() {
                         <div style="display:flex; justify-content:space-between; font-weight:bold;">
                             <span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span>
                             <span>PERCENTAGE: <span style="color:#d32f2f;">${perc}%</span></span>
-                            <span>RESULT: <span style="color:#d32f2f;">${status}</span></span>
+                            <span>RESULT: <span style="color:#d32f2f;">${status.toUpperCase()}</span></span>
                         </div>
                     </div>
                     <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                         <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:rgba(240,244,255,0.9);"><b style="font-size:12px;">TEACHER REMARKS:</b><br><span style="color:#1a237e; font-weight:bold;">${status === 'PASSED' ? 'EXCELLENT PERFORMANCE.' : 'NEEDS IMPROVEMENT.'}</span></div>
-                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:rgba(240,244,255,0.9);"><b style="font-size:12px;">PROMOTED TO CLASS:</b><br><span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls : cls}</span></div>
+                        <div style="border:1.5px solid #1a237e; border-radius:10px; padding:10px; background:rgba(240,244,255,0.9);"><b style="font-size:12px;">PROMOTED TO CLASS:</b><br><span style="color:#d32f2f; font-weight:bold;">${status === 'PASSED' ? nextCls.toUpperCase() : cls.toUpperCase()}</span></div>
                     </div>
                     <div style="margin-top:60px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;">
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> 
                         <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span>
                     </div>
-                    <div style="position:absolute; bottom:30px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px;">✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿</div>
+                    <div style="position:absolute; bottom:20px; left:0; width:100%; text-align:center; font-size:22px; color:#1a237e; opacity:0.6; letter-spacing:8px; z-index:2;">✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿</div>
                 </div>`;
             }
         });
@@ -485,8 +464,8 @@ function printAll() {
                     body { margin:0; background:#fff; font-family: 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; }
                     .report-card-container {
                         position: relative;
-                        width: 190mm; 
-                        height: 275mm; 
+                        width: 195mm; 
+                        height: 280mm; 
                         padding: 8mm; 
                         margin: 5mm auto; 
                         border: 10px double #1a237e; 
@@ -495,21 +474,39 @@ function printAll() {
                         background: white;
                         overflow: hidden;
                     }
-                    .watermark-container {
+                    /* Scattered Sunflowers and Butterflies */
+                    .watermark-pattern {
                         position: absolute;
                         top: 0; left: 0; width: 100%; height: 100%;
                         z-index: 0;
-                        opacity: 0.50;
+                        opacity: 0.1;
                         background-image: 
-                            url('https://img.icons8.com/color/200/sunflower.png'), 
-                            url('https://img.icons8.com/color/100/butterfly.png'),
-                            url('https://img.icons8.com/color/200/school-boy.png'),
-                            url('https://img.icons8.com/color/200/school-girl.png');
-                        background-repeat: no-repeat;
-                        background-position: 5% 90%, 90% 10%, 30% 95%, 70% 95%;
-                        background-size: 150px, 80px, 180px, 180px;
+                            url('https://img.icons8.com/color/100/sunflower.png'), 
+                            url('https://img.icons8.com/color/80/butterfly.png');
+                        background-repeat: repeat;
+                        background-position: 0 0, 50px 50px;
+                        background-size: 100px, 60px;
                     }
-                    table, div, h1, h3, center { position: relative; z-index: 1; }
+                    /* Fixed School Characters at Bottom */
+                    .character-boy {
+                        position: absolute;
+                        bottom: 40px; left: 30px;
+                        width: 150px; height: 150px;
+                        background: url('https://img.icons8.com/color/200/school-boy.png') no-repeat;
+                        background-size: contain;
+                        opacity: 0.15;
+                        z-index: 0;
+                    }
+                    .character-girl {
+                        position: absolute;
+                        bottom: 40px; right: 30px;
+                        width: 150px; height: 150px;
+                        background: url('https://img.icons8.com/color/200/school-girl.png') no-repeat;
+                        background-size: contain;
+                        opacity: 0.50;
+                        z-index: 0;
+                    }
+                    table, div, h1, h3, center, img { position: relative; z-index: 1; }
                 </style>
             </head>
             <body>
