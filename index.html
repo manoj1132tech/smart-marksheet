@@ -403,7 +403,7 @@
         return n < 10 ? "0" + n : n;
     }
 
-    function printAll() {
+function printAll() {
         const cls = document.getElementById('pClass').value;
         let content = '';
         MASTER.forEach((r, i) => {
@@ -431,12 +431,11 @@
                 let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1ST");
 
                 content += `
-                <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif;">
+                <div class="report-card-container">
                     <div class="watermark-container"></div>
-                    
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
-                        <div style="flex: 0 0 80px;"><img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;"></div>
-                        <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
+                        <div style="flex: 1; text-align: center;"> 
+                            <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1>
                             <p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
                         </div>
                     </div>
@@ -475,45 +474,51 @@
                 </div>`;
             }
         });
-        const win = window.open('', '_blank');
-     win.document.write(`<html><head><title>PRINT</title>
-<style>
-    @page { size: A4; margin: 5mm; } 
-    body { margin:0; background:#fff; font-family: 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; }
-    
-    .report-card-container {
-        position: relative; /* Watermark iske respect mein position hoga */
-        width: 190mm; 
-        min-height: 280mm; 
-        padding: 8mm; 
-        margin: 5mm auto; 
-        border: 10px double #1a237e; 
-        box-sizing: border-box; 
-        page-break-after: always; 
-        background: white;
-    }
 
-    .watermark-container {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 0;
-        opacity: 0.50;
-        background-image: 
-            url('https://img.icons8.com/color/200/sunflower.png'), 
-            url('https://img.icons8.com/color/100/butterfly.png'),
-            url('https://img.icons8.com/color/200/school-boy.png'),
-            url('https://img.icons8.com/color/200/school-girl.png');
-        background-repeat: no-repeat;
-        background-position: 5% 90%, 90% 10%, 30% 95%, 70% 95%;
-        background-size: 150px, 80px, 180px, 180px;
-        pointer-events: none;
-        -webkit-print-color-adjust: exact;
-    }
-    
-    table, div, h1, h3 { position: relative; z-index: 1; } /* Content ko watermark ke upar laane ke liye */
-</style></head>...`);
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <html>
+            <head>
+                <title>PRINT MARKSHEETS</title>
+                <style>
+                    @page { size: A4; margin: 0; } 
+                    body { margin:0; background:#fff; font-family: 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; }
+                    .report-card-container {
+                        position: relative;
+                        width: 190mm; 
+                        height: 275mm; 
+                        padding: 8mm; 
+                        margin: 5mm auto; 
+                        border: 10px double #1a237e; 
+                        box-sizing: border-box; 
+                        page-break-after: always; 
+                        background: white;
+                        overflow: hidden;
+                    }
+                    .watermark-container {
+                        position: absolute;
+                        top: 0; left: 0; width: 100%; height: 100%;
+                        z-index: 0;
+                        opacity: 0.50;
+                        background-image: 
+                            url('https://img.icons8.com/color/200/sunflower.png'), 
+                            url('https://img.icons8.com/color/100/butterfly.png'),
+                            url('https://img.icons8.com/color/200/school-boy.png'),
+                            url('https://img.icons8.com/color/200/school-girl.png');
+                        background-repeat: no-repeat;
+                        background-position: 5% 90%, 90% 10%, 30% 95%, 70% 95%;
+                        background-size: 150px, 80px, 180px, 180px;
+                    }
+                    table, div, h1, h3, center { position: relative; z-index: 1; }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `);
         win.document.close();
-        setTimeout(() => win.print(), 1000);
+        setTimeout(() => { win.focus(); win.print(); }, 1000);
     }
     
     sync();
