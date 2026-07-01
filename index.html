@@ -391,9 +391,9 @@ function printAll() {
             let cleanDOB = formatDOB(r[5]);
 
             let tableRows = subjects.map(s => {
-                let u1 = Number(m[s+'_UT1']||0);
+                let u1 = Number(m[s+'_CCAI']||0);
                 let hy = Number(m[s+'_HY']||0);
-                let u2 = Number(m[s+'_UT2']||0);
+                let u2 = Number(m[s+'_CCAII']||0);
                 let an = Number(m[s+'_AN']||0);
                 let t = u1 + hy + u2 + an;
                 grandTotal += t;
@@ -405,7 +405,7 @@ function printAll() {
 
             let perc = (grandTotal / 6).toFixed(2);
             let status = grandTotal >= 198 ? "PASSED" : "FAILED";
-            let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1ST");
+            let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1st");
 
            content += `
             <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif; overflow:hidden;">
@@ -449,7 +449,7 @@ function printAll() {
                     </div>
 
                     <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px; background:rgba(255,255,255,0.7);">
-                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>UT-1</th><th>HALF YEARLY</th><th>UT-2</th><th>ANNUAL</th><th>TOTAL</th><th>GRADE</th></tr>
+                        <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>CCA-I</th><th>HALF YEARLY</th><th>CCA-II</th><th>ANNUAL</th><th>TOTAL</th><th>GRADE</th></tr>
                         ${tableRows}
                     </table>
 
