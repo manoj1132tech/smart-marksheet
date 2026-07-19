@@ -148,7 +148,7 @@
     function getStars(score, isGrade = false) { let stars = ""; if(isGrade) { if(score === 'A+') stars = '★★★★★'; else if(score === 'A') stars = '★★★★'; else if(score === 'B') stars = '★★★'; else stars = '★★'; } else { if(score >= 90) stars = '★★★★★'; else if(score >= 75) stars = '★★★★'; else if(score >= 60) stars = '★★★'; else if(score >= 45) stars = '★★'; else stars = '★'; } return `<span style="color:#ffd700;">${stars}</span>`; }
     function prefixZero(val) { if(val === "" || val === null || val === undefined) return "00"; let n = Number(val); return n < 10 ? "0" + n : n; }
 
-   function printAll() {
+  function printAll() {
         const cls = document.getElementById('pClass').value;
         let content = '';
         MASTER.forEach((r, i) => {
@@ -156,61 +156,53 @@
                 let m = {}; try { m = JSON.parse(r[6] || "{}"); } catch(e) {}
                 let grandTotal = 0;
                 let subjects = ["HINDI ORAL", "HINDI WRITTEN", "ENGLISH ORAL", "ENGLISH WRITTEN", "MATHEMATICS ORAL", "MATHEMATICS WRITTEN"];
-                
-                let tableRows = subjects.map(s => { 
-                    let u1 = Number(m[s+'_UT1']||0); let hy = Number(m[s+'_HY']||0); 
-                    let u2 = Number(m[s+'_UT2']||0); let an = Number(m[s+'_AN']||0); 
-                    let t = u1 + hy + u2 + an; grandTotal += t; 
-                    return `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">${s}</td><td>${prefixZero(u1)}</td><td>${hy}</td><td>${prefixZero(u2)}</td><td>${an}</td><td style="color:#d32f2f; font-weight:bold;">${t}</td><td>${getStars(t)}</td></tr>`; 
+                let cleanDOB = formatDOB(r[5]);
+
+                let tableRows = subjects.map(s => {
+                    let u1 = Number(m[s+'_UT1']||0); let hy = Number(m[s+'_HY']||0);
+                    let u2 = Number(m[s+'_UT2']||0); let an = Number(m[s+'_AN']||0);
+                    let t = u1 + hy + u2 + an; grandTotal += t;
+                    return `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">${s}</td><td>${prefixZero(u1)}</td><td>${hy}</td><td>${prefixZero(u2)}</td><td>${an}</td><td style="color:#d32f2f; font-weight:bold;">${t}</td><td>${getStars(t)}</td></tr>`;
                 }).join('');
                 
+                tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">STORY TELLING</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['STORY TELLING_TOTAL']||'-'}</td><td>${getStars(m['STORY TELLING_TOTAL'], true)}</td></tr>`;
+                tableRows += `<tr><td style="color:#1a237e; font-weight:bold; text-align:left; padding-left:15px;">PHYSICAL ACTIVITY</td><td colspan="4" style="font-size:12px; color:#777;">ACTIVITY BASED GRADE</td><td style="color:#d32f2f; font-weight:bold;">${m['PHYSICAL ACTIVITY_TOTAL']||'-'}</td><td>${getStars(m['PHYSICAL ACTIVITY_TOTAL'], true)}</td></tr>`;
+
                 let perc = (grandTotal / 6).toFixed(2);
                 let status = grandTotal >= 198 ? "PASSED" : "FAILED";
                 let nextCls = cls === "NURSERY" ? "LKG" : (cls === "LKG" ? "UKG" : "1ST");
-                
-                // Teacher Remarks logic based on percentage
                 let remarks = perc >= 90 ? "EXCELLENT PERFORMANCE" : (perc >= 75 ? "VERY GOOD" : (perc >= 60 ? "GOOD" : (perc >= 45 ? "FAIR" : "IMPROVEMENT NEEDED")));
 
                 content += `
                 <div style="width:190mm; min-height:270mm; padding:8mm; margin:5mm auto; border:10px double #1a237e; box-sizing:border-box; page-break-after:always; text-transform:uppercase; background:white; position:relative; font-family: 'Segoe UI', sans-serif; overflow:hidden;">
-                    <!-- Scattered Butterflies -->
-                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:0.3;">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:5%; left:5%; width:50px; transform:rotate(-20deg);">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:15%; right:8%; width:45px; transform:rotate(20deg);">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:40%; left:2%; width:60px; transform:rotate(10deg);">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:60%; right:5%; width:55px; transform:rotate(-15deg);">
-                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:85%; left:10%; width:50px; transform:rotate(5deg);">
+                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:0.50;">
+                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:10%; left:5%; width:60px; transform:rotate(-20deg);">
+                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:10%; right:10%; width:50px; transform:rotate(15deg);">
+                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:30%; left:40%; width:70px; transform:rotate(-10deg);">
+                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:50%; right:5%; width:55px; transform:rotate(30deg);">
+                        <img src="https://img.icons8.com/color/96/butterfly.png" style="position:absolute; top:75%; left:15%; width:60px; transform:rotate(-5deg);">
                     </div>
+                    <div style="position:absolute; bottom:0; left:0; width:100%; height:60px; background:url('https://img.icons8.com/color/96/sunflower.png') repeat-x; background-size:55px; border-top:3px solid #4CAF50; z-index:1;"></div>
                     <div style="position:relative; z-index:2;">
-                        <div style="text-align:center; border-bottom:2px solid #1a237e; margin-bottom:15px;">
-                            <h1 style="color:#1a237e; margin:0; font-size:32px;">K.R.R. JUNIOR HIGH SCHOOL</h1>
-                            <p style="margin:5px 0; font-weight:bold;">MANPUR, BAHERI, BAREILLY (U.P.)</p>
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">
+                            <div style="flex: 0 0 80px;"><img src="logo.jpg" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;"></div>
+                            <div style="flex: 1; text-align: center; padding-right: 80px;"> <h1 style="color:#1a237e; margin:0; font-size:35px; letter-spacing: 1px; line-height: 1.2;">K.R.R. JUNIOR HIGH SCHOOL</h1><p style="margin:5px 0 0 0; font-weight:bold; font-size: 16px; color: #333;">MANPUR, BAHERI, BAREILLY (U.P.)</p></div>
                         </div>
-                        <center><div style="border:2px solid #b8860b; padding:5px 20px; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT (2025-26)</div></center>
-                        
-                        <div style="margin-bottom:15px; border:1px solid #1a237e; padding:10px; display:grid; grid-template-columns: 1fr 1fr; font-size:14px;">
-                            <div>NAME: <b>${r[0]}</b></div><div>ROLL NO: <b>${r[4]}</b></div>
-                            <div>FATHER: <b>${r[2]}</b></div><div>MOTHER: <b>${r[1]}</b></div>
-                            <div>CLASS: <b>${r[3]}</b></div><div>DOB: <b>${formatDOB(r[5])}</b></div>
-                        </div>
-
-                        <table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
-                            <tr style="background:#1a237e; color:white;"><th>SUBJECT</th><th>CCA-I</th><th>HY</th><th>CCA-II</th><th>AN</th><th>TOTAL</th><th>GRADE</th></tr>
+                        <center><h3 style="color:#b8860b; margin:5px 0;">SESSION: 2025-2026</h3><div style="border:2px solid #b8860b; border-radius:15px; padding:5px 40px; background:#fff3e0; display:inline-block; font-weight:bold; margin-bottom:15px;">PROGRESS REPORT</div></center>
+                        <div style="margin:10px 0 20px 0; border:2px solid #1a237e; padding:15px; border-radius:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; background:rgba(252, 252, 252, 0.8);"><div>NAME: <b>${r[0]}</b></div><div style="padding-left:15%;">ROLL NO: <b>${r[4]}</b></div><div>FATHER: <b>${r[2]}</b></div><div style="padding-left:15%;">MOTHER: <b>${r[1]}</b></div><div>CLASS: <b>${r[3]}</b></div><div style="padding-left:15%;">DOB: <b>${cleanDOB}</b></div></div>
+                        <table border="2" style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1a237e; font-size:13px; background:rgba(255,255,255,0.7);">
+                            <tr style="background:#1a237e; color:white;"><th style="padding:10px;">SUBJECT NAME</th><th>CCA-I</th><th>HALF YEARLY</th><th>CCA-II</th><th>ANNUAL</th><th>TOTAL</th><th>GRADE</th></tr>
                             ${tableRows}
                         </table>
-
-                        <div style="margin-top:15px; background:#fff3e0; padding:10px; font-weight:bold; border:1px solid #b8860b;">
-                            GRAND TOTAL: ${grandTotal} / 600 | PERCENTAGE: ${perc}% | RESULT: ${status}
+                        <div style="margin-top:20px; border:2px solid #b8860b; border-radius:10px; padding:12px; background:rgba(255, 249, 240, 0.8); font-size:16px;"><div style="display:flex; justify-content:space-between; font-weight:bold;"><span>GRAND TOTAL: <span style="color:#d32f2f;">${grandTotal} / 600</span></span><span>PERCENTAGE: <span style="color:#d32f2f;">${perc}%</span></span><span>RESULT: <span style="color:#d32f2f;">${status}</span></span></div></div>
+                        
+                        <!-- NEW LINES ADDED HERE -->
+                        <div style="margin-top:15px; border:2px solid #1a237e; padding:10px; border-radius:10px; background:rgba(255,255,255,0.8); font-size:14px; font-weight:bold; color:#1a237e;">
+                            <span style="color:#b8860b;">PROMOTED TO CLASS: <u>&nbsp;&nbsp;&nbsp;&nbsp; ${nextCls} &nbsp;&nbsp;&nbsp;&nbsp;</u></span>
+                            <span style="margin-left:50px;">TEACHER'S REMARKS: <u>&nbsp;&nbsp; ${remarks} &nbsp;&nbsp;</u></span>
                         </div>
 
-                        <div style="margin-top:15px; padding:10px; border:1px solid #1a237e; font-weight:bold;">
-                            <span style="color:#b8860b;">PROMOTED TO CLASS: ${nextCls}</span>
-                            <span style="margin-left:40px;">TEACHER'S REMARKS: ${remarks}</span>
-                        </div>
-
-                        <div style="margin-top:50px; display:flex; justify-content:space-between; font-weight:bold;">
-                            <span>CLASS TEACHER</span><span>PRINCIPAL</span>
-                        </div>
+                        <div style="margin-top:40px; padding-bottom:30px; display:flex; justify-content:space-between; font-weight:bold; padding:0 20px;"><span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">CLASS TEACHER</span> <span style="border-top:1.5px solid #000; width:150px; text-align:center; padding-top:5px;">PRINCIPAL</span></div>
                     </div>
                 </div>`;
             }
